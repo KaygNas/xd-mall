@@ -1,0 +1,35 @@
+@import "../common.scss";
+
+.status-filter {
+  font-size: 14px;
+}
+
+.status-filter__item {
+  display: inline-block;
+  color: $shallow-blue-2;
+  cursor: pointer;
+}
+
+.status-filter__item:not(.current):hover {
+  color: $shallow-blue-1;
+}
+.status-filter__item:not(.current):active,
+.status-filter__item:not(.current):focus {
+  color: $shallow-blue-2;
+}
+
+.status-filter__item:not(:first-child)::before {
+  content: " ";
+  display: inline-block;
+  height: 14px;
+  width: 1px;
+  vertical-align: middle;
+  margin-left: 9px;
+  margin-right: 9px;
+  background-color: $deep-grey-2;
+}
+
+.current {
+  font-weight: 500;
+  color: $deep-blue-2;
+}

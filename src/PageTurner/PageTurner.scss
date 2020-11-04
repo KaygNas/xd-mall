@@ -1,0 +1,32 @@
+@import "../common.scss";
+.turner,
+.turner__indicator {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 15px;
+}
+
+.turner__btn {
+  width: 27px;
+  height: 27px;
+  line-height: 27px;
+  text-align: center;
+}
+
+.turner__btn:nth-child(3n - 2) {
+  margin-right: 5px;
+}
+
+.turner__indicator {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.turner__indicator__input {
+  max-width: 28px;
+  padding: 4px 6px;
+  margin-left: 5px;
+  margin-right: 5px;
+  text-align: center;
+}

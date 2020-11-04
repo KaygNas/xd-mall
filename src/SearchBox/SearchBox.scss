@@ -1,0 +1,18 @@
+@import "../common.scss";
+.search-box {
+  font-size: 15px;
+  font-weight: 400;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.search-box__input {
+  width: 162px;
+  padding: 4px 9px;
+}
+
+.search-box__btn {
+  margin-left: 15px;
+  padding: 3px 9px;
+}

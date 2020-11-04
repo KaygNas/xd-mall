@@ -1,0 +1,28 @@
+@import "../common.scss";
+.menu__sub-menu {
+  font-size: 15px;
+  font-weight: 300;
+  overflow: hidden;
+  transition: height 0.2s ease-in;
+}
+
+.menu__sub-menu__title {
+  height: 40px;
+  line-height: 40px;
+  padding-left: 18px;
+  padding-right: 18px;
+  color: $trans-grey-1;
+}
+
+.menu__sub-menu__title--selected {
+  color: #fff;
+  font-weight: 400;
+}
+
+.menu__sub-menu__title:hover:not(.menu__sub-menu__title--selected) {
+  color: $shallow-blue-1;
+}
+
+.menu__sub-menu__title {
+  cursor: pointer;
+}
