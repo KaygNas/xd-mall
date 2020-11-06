@@ -10,6 +10,9 @@ function MenuItem(props) {
                 className={"menu__title " + (props.selected ? "menu__title--selected" : " ")}
                 onClick={props.onClick}
             >
+                <span className="menu__icon">
+                    {props.icon}
+                </span>
                 {props.title}
             </div>
             <SubMenuItmes

@@ -358,20 +358,6 @@ const tableData = {
     },
 }
 
-const menuItems = [{
-    id: 1,
-    title: "订单",
-    listItems: [{ id: 1, title: "全部订单", path: "/orders" }, { id: 2, title: "报表", path: "/orders/report" }],
-}, {
-    id: 2,
-    title: "产品",
-    listItems: [{ id: 1, title: "全部产品", path: "/products" }, { id: 2, title: "分类", path: "/products/categories" }, { id: 3, title: "标签", path: "/products/tags" }, { id: 4, title: "属性", path: "/products/attributes" }],
-}, {
-    id: 3,
-    title: "用户",
-    listItems: [{ id: 1, title: "全部用户", path: "/users" }],
-}];
-
 const categories = [
     {
         id: "0",
@@ -393,4 +379,4 @@ const categories = [
     },
 ];
 
-export { headerData, tableData, menuItems, categories }
+export { headerData, tableData, categories }

@@ -1,7 +1,6 @@
 import React from "react";
 import Header from "./components/Header/Header";
 import Sider from "./components/Sider/Sider";
-import { menuItems } from "./appData/appData";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Products from "./Products/Products";
 import ProductEdit from "./Products/ProductEdit/ProductEdit";
@@ -11,6 +10,11 @@ import Tags from "./Products/Tags";
 import TagEdit from "./Products/TagEdit/TagEdit";
 import Attributes from "./Products/Attributes";
 import AttributeEdit from "./Products/AttributeEdit/AttrbuteEdit";
+import {
+    CodeSandboxOutlined,
+    PayCircleOutlined,
+    TeamOutlined,
+} from "@ant-design/icons";
 
 class App extends React.Component {
     constructor() {
@@ -31,7 +35,30 @@ class App extends React.Component {
             <Router>
                 <Header title="祥达易购"></Header>
                 <Sider
-                    menuItems={menuItems}
+                    menuItems={
+                        [{
+                            id: 1,
+                            title: "订单",
+                            icon: <PayCircleOutlined />,
+                            listItems: [
+                                { id: 1, title: "全部订单", path: "/orders" },
+                                { id: 2, title: "报表", path: "/orders/report" }],
+                        }, {
+                            id: 2,
+                            title: "产品",
+                            icon: <CodeSandboxOutlined></CodeSandboxOutlined>,
+                            listItems: [
+                                { id: 1, title: "全部产品", path: "/products" },
+                                { id: 2, title: "分类", path: "/products/categories" },
+                                { id: 3, title: "标签", path: "/products/tags" },
+                                { id: 4, title: "属性", path: "/products/attributes" }],
+                        }, {
+                            id: 3,
+                            title: "用户",
+                            icon: <TeamOutlined />,
+                            listItems: [{ id: 1, title: "全部用户", path: "/users" }],
+                        }]
+                    }
                     isfolded={this.state.isfolded}
                     foldSider={() => { this.foldSider() }}
                 ></Sider>
