@@ -1,0 +1,75 @@
+.edit-area__items {
+  width: 100%;
+  padding: 22px;
+  border: 1px solid #f7f7f7;
+  box-sizing: border-box;
+  background-color: #fff;
+}
+
+.edit-area__item,
+.product-status__item {
+  font-size: 15px;
+  margin-bottom: 13px;
+}
+
+.edit-area__item__title {
+  display: inline-block;
+  width: 100px;
+  text-align: right;
+}
+
+.edit-area__item__input,
+.edit-area__item__input--price {
+  display: inline-block;
+  margin-left: 18px;
+}
+
+.edit-area__item__tags {
+  margin-top: 9px;
+  margin-left: 118px;
+}
+
+.edit-area__item__tag {
+  display: inline-block;
+  margin-right: 13px;
+  padding: 4px 8px;
+  border-radius: 2px;
+  background-color: #cccccc;
+}
+
+.edit-area__item__tag__delete {
+  margin-left: 14px;
+  cursor: pointer;
+}
+
+.edit-area__item__input--price {
+  position: relative;
+}
+
+.edit-area__item__input--price::before {
+  display: block;
+  position: absolute;
+  content: "¥";
+  top: 50%;
+  left: 8px;
+  transform: translateY(-50%);
+}
+
+.edit-area__item__input__ele,
+.edit-area__item__input--price__ele {
+  width: 240px;
+}
+
+.edit-area__item__input--price__ele {
+  padding-left: 24px;
+}
+
+.product-status__item__title {
+  display: inline-block;
+  width: 60px;
+  text-align: right;
+  margin-right: 6px;
+}
+.product-status__item:last-child {
+  margin-bottom: 0;
+}

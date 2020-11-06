@@ -1,0 +1,49 @@
+@import "../common.scss";
+.table-nav {
+  display: flex;
+  flex-direction: row;
+  margin-top: 18px;
+}
+
+.table {
+  width: 100%;
+  font-size: 13px;
+  margin-top: 13px;
+}
+
+.table th {
+  text-align: start;
+}
+
+.table th:first-child,
+.table td:first-child {
+  padding-left: 20px;
+}
+
+.table__head,
+.table__tfoot {
+  background-color: #fff;
+  border: 1px solid $normal-grey-2;
+}
+
+.table th {
+  padding-top: 9px;
+  padding-bottom: 9px;
+}
+
+.valign-middle {
+  vertical-align: middle;
+}
+
+.table__row {
+  background-color: #fff;
+}
+
+.table__row:nth-child(2n-1) {
+  background-color: $shallow-grey-2;
+}
+
+.table__row td {
+  padding-top: 13px;
+  padding-bottom: 13px;
+}

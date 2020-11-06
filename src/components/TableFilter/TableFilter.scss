@@ -1,0 +1,71 @@
+@import "../common.scss";
+.table-filter-wraper {
+  display: inline-block;
+}
+.table-filter {
+  display: inline-block;
+  position: relative;
+  font-size: 15px;
+}
+
+.table-filter::after {
+  position: absolute;
+  display: block;
+  content: " ";
+  top: 11px;
+  right: 7px;
+  border-style: solid;
+  border-width: 7px 5px 0 5px;
+  border-color: $deep-grey-2 transparent transparent transparent;
+}
+
+.table-filter:focus {
+  outline: $shallow-blue-2;
+  box-shadow: 0 0 2px 0 $shallow-blue-2;
+}
+
+.table-filter__input,
+.table-filter__drop-down__item {
+  width: 120px;
+  padding: 6px 20px 6px 9px;
+  cursor: pointer;
+  color: $deep-grey-2;
+}
+
+.table-filter__drop-down {
+  position: absolute;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 2px 0 $normal-grey-2;
+  opacity: 0;
+  transition: opacity 0.2s ease-in;
+  z-index: 1001;
+}
+
+.table-filter__drop-down__item {
+  position: relative;
+  padding: 9px 20px 9px 9px;
+  background-color: #fff;
+}
+.table-filter__drop-down__item:hover {
+  background-color: $shallow-grey-3;
+}
+
+.table-filter__drop-down__arrow {
+  position: absolute;
+  display: block;
+  top: 11px;
+  right: 7px;
+  width: 6px;
+  height: 6px;
+  border: 1px solid;
+  border-color: $deep-grey-1 $deep-grey-1 transparent transparent;
+  transform: rotate(45deg);
+}
+
+.sub-list {
+  left: 120px;
+}
+
+.table-filter__btn {
+  margin-left: 6px;
+}

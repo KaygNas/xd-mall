@@ -1,0 +1,86 @@
+@import "../common.scss";
+
+.content-wraper {
+  margin-top: 40px;
+  margin-left: 185px;
+  padding: 18px;
+  transition: margin 0.2s ease-in;
+}
+
+.fold {
+  margin-left: 40px;
+}
+
+.table__list-item__img {
+  display: inline-block;
+  width: 60px;
+  height: 60px;
+  background-color: $deep-blue-1;
+}
+
+.table__list-item__indicator {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: $deep-blue-1;
+}
+
+.table__list-item__name {
+}
+
+.product__attr,
+.table__list-item__name__controlor {
+  margin-top: 7px;
+  color: $deep-grey-1;
+}
+
+.table__list-item__name__controlor {
+  opacity: 0;
+  transition: opacity 0.2s ease-in;
+}
+
+.table__list-item__name:hover .table__list-item__name__controlor {
+  opacity: 1;
+  transition: opacity 0.2s ease-out;
+}
+
+.table__list-item__name__controlor__item {
+  display: inline-block;
+}
+
+.table__list-item__name__controlor__item:last-child a {
+  color: #aa4444;
+}
+
+.table__list-item__name__controlor__item:last-child a:hover {
+  color: #dc3232;
+}
+
+.table__list-item__name__controlor__item:not(:first-child)::before {
+  content: " ";
+  display: inline-block;
+  height: 14px;
+  width: 1px;
+  vertical-align: middle;
+  margin-left: 9px;
+  margin-right: 9px;
+  background-color: $deep-grey-2;
+}
+
+.product__in-stock {
+  color: #7ad03a;
+}
+
+.product__out-of-stock {
+  color: #aa4444;
+}
+
+.product__regular-price {
+  color: $deep-grey-1;
+  text-decoration: line-through;
+}
+
+.product__sale-price {
+  margin-left: 4px;
+}

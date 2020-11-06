@@ -1,0 +1,88 @@
+@import "../common.scss";
+
+.edit-wraper {
+  display: flex;
+  flex-direction: row;
+  margin-top: 24px;
+}
+
+.edit-area {
+  box-sizing: border-box;
+  padding-right: 16px;
+}
+
+.edit__title {
+  font-size: 30px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 5px 9px;
+}
+
+.edit__main {
+  width: 100%;
+  margin-top: 14px;
+}
+
+.control-box {
+  width: 100%;
+  margin-bottom: 18px;
+}
+
+.control-box__title,
+.control-box__status,
+.control-box__edit {
+  width: 100%;
+  padding: 14px;
+  box-sizing: border-box;
+  border: 1px solid $normal-grey-2;
+  background-color: #fff;
+}
+
+.control-box__status {
+  border-width: 0 1px;
+}
+
+.control-box__title {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.control-box__edit {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 15px;
+  color: $shallow-blue-2;
+  background-color: #f9f9f9;
+}
+
+.control-box__edit__normal-btn {
+  cursor: pointer;
+}
+
+.control-box__edit__normal-btn:hover {
+  color: $shallow-blue-1;
+}
+
+.control-box__edit__normal-btn:last-child {
+  color: #aa4444;
+}
+
+.control-box__edit__normal-btn:last-child:hover {
+  color: #dc3232;
+}
+
+.control-box__edit__normal-btn:not(:first-child)::before {
+  content: " ";
+  display: inline-block;
+  height: 14px;
+  width: 1px;
+  vertical-align: middle;
+  margin-left: 9px;
+  margin-right: 9px;
+  background-color: $deep-grey-2;
+}
+
+.control-box__edit__update-btn {
+  margin-left: auto;
+}
