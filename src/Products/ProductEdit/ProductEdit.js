@@ -7,7 +7,7 @@ import {
   ControlBox,
   ImgUpdater
 } from "../../components/ContentEdit/ContentEdit";
-import TableFilter from "../../components/TableFilter/TableFilter";
+import { TableFilter, ItemInputer } from "../../components/TableControler/TableControler";
 import "./ProductEdit.scss";
 import { categories } from "../../appData/appData";
 

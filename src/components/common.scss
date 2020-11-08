@@ -81,6 +81,11 @@ $deep-grey-2: #555555;
   box-shadow: 0 1px 0 0 $normal-grey-2;
 }
 
+.normal-link,
+.delete {
+  cursor: pointer;
+}
+
 .normal-link {
   color: $shallow-blue-2;
   text-decoration: none;
@@ -94,6 +99,20 @@ $deep-grey-2: #555555;
 .normal-link:focus {
   color: $shallow-blue-2;
   box-shadow: 0 0 2px 0 $shallow-blue-2;
+}
+
+.delete {
+  color: #aa4444;
+}
+
+.delete:hover {
+  color: #dc3232;
+}
+
+.delete:active,
+.delete:focus {
+  color: #aa4444;
+  box-shadow: 0 0 2px 0 #aa4444;
 }
 
 .col-1 {

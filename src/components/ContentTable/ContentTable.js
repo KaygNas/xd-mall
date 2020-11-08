@@ -1,5 +1,5 @@
 import PageTurner from "../PageTurner/PageTurner";
-import TableFilter from "../TableFilter/TableFilter";
+import { TableFilter, ItemInputer } from "../TableControler/TableControler";
 import "./ContentTable.scss";
 
 function ContentTable(props) {
@@ -13,6 +13,15 @@ function ContentTable(props) {
                         list={props.filter.list}
                         button={props.filter.button}
                     ></TableFilter>
+                }
+                {
+                    props.inputer &&
+                    <ItemInputer
+                        placeholder={props.inputer.placeholder}
+                        value={props.inputer.value}
+                        onChange={props.inputer.onChange}
+                        button={props.inputer.button}
+                    ></ItemInputer>
                 }
                 <PageTurner curPage="1" totalPage="233"></PageTurner>
             </div>
@@ -68,6 +77,15 @@ function ContentTable(props) {
                         list={props.filter.list}
                         button={props.filter.button}
                     ></TableFilter>
+                }
+                {
+                    props.inputer &&
+                    <ItemInputer
+                        placeholder={props.inputer.placeholder}
+                        value={props.inputer.value}
+                        onChange={props.inputer.onChange}
+                        button={props.inputer.button}
+                    ></ItemInputer>
                 }
                 <PageTurner curPage="1" totalPage="233"></PageTurner>
             </div>

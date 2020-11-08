@@ -17,7 +17,12 @@ function ContentEdit(props) {
 function EditArea(props) {
     return (
         <React.Fragment>
-            <input className="edit__title" placeholder="请输入名称"></input>
+            <input
+                className="edit__title"
+                placeholder="请输入名称"
+                value={props.value}
+                onChange={props.onChange}
+            ></input>
             <div className="edit__main">
                 {props.children}
             </div>

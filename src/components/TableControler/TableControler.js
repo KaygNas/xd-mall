@@ -1,5 +1,5 @@
 import React from "react";
-import "./TableFilter.scss";
+import "./TableControler.scss";
 
 class TableFilter extends React.Component {
     constructor(props) {
@@ -101,4 +101,33 @@ class TableFilter extends React.Component {
         )
     }
 }
-export default TableFilter;
+
+class ItemInputer extends React.Component {
+    constructor() {
+        super();
+        this.state = {
+
+        }
+    }
+    render() {
+        return (
+            <div className="table-filter-wraper">
+                <input
+                    className="table-filter__input"
+                    placeholder={this.props.placeholder}
+                    value={this.props.value}
+                    onChange={this.props.onChange}
+                ></input>
+                {
+                    this.props.button &&
+                    <button
+                        className="table-filter__btn btn-2"
+                        onClick={this.props.button.fn}
+                    >{this.props.button.name}</button>
+                }
+            </div>
+        )
+    }
+}
+
+export { TableFilter, ItemInputer };

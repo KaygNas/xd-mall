@@ -64,10 +64,10 @@ class App extends React.Component {
                 ></Sider>
 
                 <Switch>
-                    <Route exact path="/products/edit">
+                    <Route path="/products/edit">
                         <ProductEdit isfolded={this.state.isfolded}></ProductEdit>
                     </Route>
-                    <Route exact path="/products/categories/edit">
+                    <Route path="/products/categories/edit">
                         <CategoryEdit isfolded={this.state.isfolded}></CategoryEdit>
                     </Route>
                     <Route exact path="/products/categories">
@@ -76,20 +76,25 @@ class App extends React.Component {
                     <Route exact path="/products/tags">
                         <Tags isfolded={this.state.isfolded}></Tags>
                     </Route>
-                    <Route exact path="/products/tags/edit">
+                    <Route path="/products/tags/edit">
                         <TagEdit isfolded={this.state.isfolded}></TagEdit>
                     </Route>
                     <Route exact path="/products/attributes">
-                        <Attributes></Attributes>
+                        <Attributes isfolded={this.state.isfolded}></Attributes>
                     </Route>
-                    <Route exact path="/products/attributes/edit">
-                        <AttributeEdit></AttributeEdit>
-                    </Route>
+                    <Route path="/products/attributes/edit/:id"
+                        children={(props) => (
+                            <AttributeEdit
+                                isfolded={this.state.isfolded}
+                                params={props.match.params}
+                                history={props.history} />
+                        )}
+                    />
                     <Route path="/">
                         <Products isfolded={this.state.isfolded}></Products>
                     </Route>
                 </Switch>
-            </Router>
+            </Router >
         );
     }
 }

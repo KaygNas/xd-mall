@@ -49,14 +49,6 @@
   display: inline-block;
 }
 
-.table__list-item__name__controlor__item:last-child a {
-  color: #aa4444;
-}
-
-.table__list-item__name__controlor__item:last-child a:hover {
-  color: #dc3232;
-}
-
 .table__list-item__name__controlor__item:not(:first-child)::before {
   content: " ";
   display: inline-block;
