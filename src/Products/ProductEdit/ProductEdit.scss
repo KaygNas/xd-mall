@@ -19,7 +19,8 @@
 }
 
 .edit-area__item__input,
-.edit-area__item__input--price {
+.edit-area__item__input--price,
+.edit-area__item__tags--input__select {
   display: inline-block;
   margin-left: 18px;
 }
@@ -72,4 +73,11 @@
 }
 .product-status__item:last-child {
   margin-bottom: 0;
+}
+
+.edit-area__item__tags--input__select {
+  width: 120px;
+  padding: 6px 20px 6px 9px;
+  cursor: pointer;
+  color: #555555;
 }

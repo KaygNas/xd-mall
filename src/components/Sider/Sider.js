@@ -14,9 +14,16 @@ class Sider extends React.Component {
     }
 
     selectMenuItem(index) {
-        this.props.isfolded && this.props.foldSider();
+        let selectedItem;
+        if (this.props.isfolded) {
+            this.props.foldSider();
+            selectedItem = index;
+        } else {
+            selectedItem = this.state.selectedItem === index ? -1 : index
+        }
+
         this.setState({
-            selectedItem: this.state.selectedItem === index ? -1 : index,
+            selectedItem: selectedItem,
         })
     }
 
@@ -35,8 +42,8 @@ class Sider extends React.Component {
                                 icon={item.icon}
                                 listItems={item.listItems}
                                 selected={
-                                    this.props.isfolded ? false :
-                                        this.state.selectedItem === index
+                                    !this.props.isfolded &&
+                                    this.state.selectedItem === index
                                 }
                                 onClick={() => this.selectMenuItem(index)}
                             >

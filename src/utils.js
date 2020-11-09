@@ -119,9 +119,9 @@ Object.assign(BaseLocalStorage.prototype, {
 
 class Products extends BaseLocalStorage {
     constructor() {
-        super("prodcuts");
+        super("products");
     }
-    create(obj) {
+    set(id, obj) {
         /* obj = {
                 id:id,
                 name: name,
@@ -137,18 +137,6 @@ class Products extends BaseLocalStorage {
                 tags:Array,
             }
         */
-        return new Promise((resolve, reject) => {
-            this.setItem("", obj, (res) => {
-                if (res.status.code === 0) {
-                    resolve(res);
-                } else {
-                    reject(res);
-                };
-            });
-        })
-    }
-
-    update(id, obj) {
         return new Promise((resolve, reject) => {
             this.setItem(id, obj, (res) => {
                 if (res.status.code === 0) {
@@ -256,23 +244,38 @@ class Categories extends BaseLocalStorage {
         })
     }
 
-    get(id) {
+    get(id, filter) {
+        const colChildren = (parentId, data) => {
+            let children = [];
+            for (let item of data) {
+                if (item.parent.id === parentId) {
+                    item.children = colChildren(item.id, data);
+                    children.push(item);
+                }
+            }
+            return children;
+        }
+
+        const filterData = (data, filter) => {
+            return data.filter((item) => {
+                for (let key in filter) {
+                    if (filter[key] !== item[key]) {
+                        return false;
+                    }
+                }
+                return true;
+            })
+        }
+
         return new Promise((resolve, reject) => {
             this.getItem(id, (res) => {
                 //TODO:增加productsCollection的数据处理
                 if (res.status.code === 0) {
-                    const colChildren = (parentId, data) => {
-                        let children = [];
-                        for (let item of data) {
-                            if (item.parent.id === parentId) {
-                                item.children = colChildren(item.id, data);
-                                children.push(item);
-                            }
-                        }
-                        return children;
-                    }
                     if (id === "all") {
                         res.value = colChildren("", res.value);
+                        if (filter) {
+                            res.value = filterData(res.value, filter);
+                        }
                     } else {
                         let categories = this.getItem("all");
                         res.value.children = colChildren(res.value.id, categories);
@@ -352,16 +355,22 @@ export const DATABASE = {
     tags: new Tags(),
 }
 
-const addItem = (that, type) => {
+const addItem = ({ that, type, item }) => {
     let data = that.state.data;
-    data[type].push(that.state.newItem);
+    //拦截相同的选项,第一判断标准为 id, 第二判断标准为 name
+    if (item.id) {
+        if (data[type].some(val => val.id === item.id)) return;
+    } else {
+        if (data[type].some(val => val.name === item.name)) return;
+    }
+    data[type].push(item);
     that.setState({
         data: data,
         newItem: "",
     })
 }
 
-const removeItem = (that, type, id) => {
+const removeItem = ({ that, type, id }) => {
     let data = that.state.data;
     data[type].splice(id, 1);
     that.setState({
@@ -369,14 +378,16 @@ const removeItem = (that, type, id) => {
     })
 }
 
-const updateData = (that, table, url) => {
+
+//这很不函数式,依赖与外部的状态
+const updateData = ({ that, type, url }) => {
     let id = that.state.id === "new" ? "" : that.state.id;
-    DATABASE[table].set(id, that.state.data).then(res => {
+    DATABASE[type].set(id, that.state.data).then(res => {
         that.props.history.push(url + res.value.id);
     });
 }
 
-const getItemData = (that, type, emptyItem) => {
+const getItemData = ({ that, type, emptyItem }) => {
     //获取数据
     if (that.props.params.id === "new"
         && that.props.params.id !== that.state.id) {
@@ -397,26 +408,31 @@ const getItemData = (that, type, emptyItem) => {
     }
 }
 
-const getAllItemsData = (that, type, callback) => {
-    DATABASE[type].get("all").then(res => {
+const getAllItemsData = ({ that, type, filter, setData }, callback) => {
+    DATABASE[type].get("all", filter).then(res => {
         console.log("recieve data", res.value);
         if (res.status.code === 0) {
             console.log(res);
-            that.setState({
-                data: res.value,
+            setData && that.setState({
+                [setData]: res.value,
             })
             callback && callback(res);
         }
     })
 }
 
-const deleteData = (type, key, callback) => {
+const deleteData = ({ type, key }, callback) => {
     DATABASE[type].remove(key).then(res => {
         console.log("recieve response", res);
         if (res.status.code === 0) {
             callback && callback(res);
         }
     })
+}
+
+const getLocaleISOTime = ({ zoneoff }) => {
+    return new Date(Date.now() + zoneoff * 3600 * 1000)
+        .toISOString().replace(/(:\d+\.\w+)$/, "");
 }
 
 export const commonAction = {
@@ -426,5 +442,6 @@ export const commonAction = {
     getItemData: getItemData,
     getAllItemsData: getAllItemsData,
     deleteData: deleteData,
+    getLocaleISOTime: getLocaleISOTime,
 }
 

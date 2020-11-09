@@ -25,11 +25,11 @@ class Attributes extends React.Component {
     }
 
     getData = () => {
-        ca.getAllItemsData(this, "attributes");
+        ca.getAllItemsData({ that: this, type: "attributes", setData: "data" });
     }
 
     removeAttr = (key) => {
-        ca.deleteData("attributes", key, this.getData);
+        ca.deleteData({ type: "attributes", key: key }, this.getData);
     }
 
     render() {

@@ -33,7 +33,7 @@ class Product extends React.Component {
             <Content isfolded={this.props.isfolded} >
                 <ContentHeader
                     title={headerData.title}
-                    addBtnPath="/products/edit"
+                    addBtnPath="/products/edit/new"
                     status={headerData.status}
                     statusIdx={this.state.statusIdx}
                     searchBox={true}

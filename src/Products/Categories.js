@@ -10,7 +10,7 @@ class Categories extends React.Component {
     constructor(props) {
         super();
         this.state = {
-            statusIdx: 0,
+            curStatus: "全部",
             data: [],
             headerData: {
                 title: "分类",
@@ -36,7 +36,7 @@ class Categories extends React.Component {
     }
 
     getData = () => {
-        ca.getAllItemsData(this, "categories", (res) => {
+        ca.getAllItemsData({ type: "categories" }, (res) => {
             let data = this.flatArr(res.value),
                 headerData = this.state.headerData,
                 status = [],
@@ -73,13 +73,20 @@ class Categories extends React.Component {
     }
 
     selectStatus = (status) => {
-        this.setState({
-            curStatus: status,
-        })
+        let filter = status === "全部" ? {} : { status: status };
+        ca.getAllItemsData(
+            { type: "categories", filter: filter },
+            (res) => {
+                let data = this.flatArr(res.value);
+                this.setState({
+                    data: data,
+                    curStatus: status,
+                })
+            })
     }
 
     removeCat = (key) => {
-        ca.deleteData("categories", key, this.getData);
+        ca.deleteData({ type: "categories", key: key }, this.getData);
     }
 
     render() {
@@ -146,7 +153,7 @@ class Categories extends React.Component {
                     title={this.state.headerData.title}
                     addBtnPath="/products/categories/edit/new"
                     status={this.state.headerData.status}
-                    statusIdx={this.state.statusIdx}
+                    curStatus={this.state.curStatus}
                     selectStatus={this.selectStatus}
                 ></ContentHeader>
                 <ContentTable

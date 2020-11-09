@@ -9,17 +9,140 @@ import {
 } from "../../components/ContentEdit/ContentEdit";
 import { TableFilter, ItemInputer } from "../../components/TableControler/TableControler";
 import "./ProductEdit.scss";
-import { categories } from "../../appData/appData";
+import { commonAction as ca } from "../../utils";
 
 class ProductEdit extends React.Component {
   constructor(props) {
     super();
     this.state = {
-      productCategory: ["可口可乐", "碳酸饮料/其他"],
+      data: {
+        id: "",
+        name: "",
+        attributes: [],
+        categories: [],
+        images: [],
+        status: "已发布", //Queries:status设定为数字,根据数字匹配对应选项更安全?
+        order: "",
+        regular_price: "",
+        sale_price: "",
+        in_stock: true,
+        limits: 0,
+        tags: [],
+        modifiedDate: "",
+      },
+      categories: [],
+      attributes: [],
+      tags: [],
+      inStock: [
+        { name: "缺货", children: null },
+        { name: "有货", children: null },
+      ],
+      selected: {
+        categories: { id: "", name: "" },
+        attributes: { id: "", name: "" },
+        tags: { id: "", name: "" },
+      },
+    }
+  }
+
+  componentDidMount = () => {
+    ca.getAllItemsData({
+      type: "categories",
+      that: this,
+      setData: "categories",
+    })
+    ca.getAllItemsData({
+      type: "attributes",
+      that: this,
+      setData: "attributes",
+    })
+    ca.getAllItemsData({
+      type: "tags",
+      that: this,
+      setData: "tags",
+    })
+  }
+
+  getData = () => {
+    let emptyItem = {
+      id: "",
+      name: "",
+      attributes: [],
+      categories: [],
+      images: [],
+      status: "已发布",
+      order: "",
+      regular_price: "",
+      sale_price: "",
+      in_stock: true,
+      limits: 0,
+      tags: [],
+      modifiedDate: ca.getLocaleISOTime({ zoneoff: 8 }),
+    };
+    ca.getItemData({
+      that: this,
+      type: "products",
+      emptyItem: emptyItem,
+    })
+  }
+
+  onChange = (e, content) => {
+    let group1 = ["categories", "tags", "attributes"],
+      group2 = ["in_stock", "status", "option"];
+    if (group1.some(val => val === content)) {
+      let selected = this.state.selected;
+      selected[content] = {
+        id: e.target.dataset.id,
+        name: e.target.dataset.value,
+      };
+      this.setState({
+        selected: selected,
+      });
+      return;
+    };
+
+    let data = this.state.data;
+    if (group2.some(val => val === content)) {
+      if (content === "option") {
+        for (let attr of data["attributes"]) {
+          attr.id === e.target.dataset.id &&
+            (attr.option = e.target.dataset.value)
+        }
+      } else {
+        data[content] = e.target.dataset.value;
+      }
+    } else {
+      data[content] = e.target.value;
+    }
+    this.setState({
+      data: data,
+    })
+  }
+
+  addItem = (type) => {
+    ca.addItem({ that: this, type: type, item: this.state.selected[type] });
+  }
+
+  removeItem = (type, index) => {
+    ca.removeItem({ that: this, type: type, id: index });
+  }
+
+  updateData = () => {
+    ca.updateData({ that: this, type: "products", url: "/products/edit/" })
+  }
+
+  getOptions = (id) => {
+    for (let attr of this.state.attributes) {
+      if (attr.id === id) {
+        return attr.options.map(val => (
+          { id: attr.id, name: val }
+        ));
+      }
     }
   }
 
   render() {
+    this.getData();
     const areaContent = (
       <div className="edit-area__items">
         <div className="edit-area__item">
@@ -27,22 +150,31 @@ class ProductEdit extends React.Component {
             <span className="edit-area__item__title">分类：</span>
             <div className="edit-area__item__input">
               <TableFilter
-                list={categories}
-                button={{ name: "添加", fn: null }}
+                list={this.state.categories}
+                button={{ name: "添加", fn: () => this.addItem("categories") }}
                 placeholder="按分类显示"
+                value={this.state.selected.categories.name}
+                onChange={(e) => this.onChange(e, "categories")}
               ></TableFilter>
             </div>
           </div>
 
           <div className="edit-area__item__tags">
             {
-              this.state.productCategory
-              && this.state.productCategory.map((item, index) => {
+              this.state.data.categories
+              && this.state.data.categories.map((item, index) => {
                 return (
                   <span
                     key={index}
                     className="edit-area__item__tag">
-                    {item}<span className="edit-area__item__tag__delete">x</span>
+                    {
+                      //TODO:应改为其父类的拼接
+                      item.name
+                    }
+                    <span
+                      className="edit-area__item__tag__delete"
+                      onClick={() => { this.removeItem("categories", index) }}
+                    >x</span>
                   </span>
                 )
               })
@@ -56,7 +188,12 @@ class ProductEdit extends React.Component {
             <div className="edit-area__item__input--price">
               <input
                 className="edit-area__item__input--price__ele"
-                type="number" step="0.5" min="0"></input>
+                type="number"
+                step="0.5"
+                min="0"
+                value={this.state.data.regular_price}
+                onChange={(e) => this.onChange(e, "regular_price")}
+              ></input>
             </div>
           </div>
         </div>
@@ -67,7 +204,13 @@ class ProductEdit extends React.Component {
             <div className="edit-area__item__input--price">
               <input
                 className="edit-area__item__input--price__ele"
-                type="number" step="0.5" min="0"></input>
+                type="number"
+                step="0.5"
+                min="0"
+                max={this.state.data.regular_price}
+                value={this.state.sale_price}
+                onChange={(e) => { this.onChange(e, "sale_price") }}
+              ></input>
             </div>
           </div>
         </div>
@@ -77,15 +220,34 @@ class ProductEdit extends React.Component {
             <span className="edit-area__item__title">属性：</span>
             <div className="edit-area__item__input">
               <TableFilter
-                list={[{ name: "规格", children: null }, { name: "优惠", children: null }]}
-                button={{ name: "添加", fn: null }}
+                list={this.state.attributes}
+                button={{ name: "添加", fn: () => this.addItem("attributes") }}
                 placeholder="添加属性"
+                value={this.state.selected.attributes.name}
+                onChange={(e) => this.onChange(e, "attributes")}
               ></TableFilter>
             </div>
           </div>
-          {
-            //TODO:新增属性的输入框
-          }
+
+          <div className="edit-area__item__tags">
+            {
+              this.state.data.attributes.map((attr, index) => (
+                <div className="edit-area__item">
+                  <span className="edit-area__item__title">{attr.name}：</span>
+                  <div className="edit-area__item__input">
+                    <TableFilter
+                      key={attr.id}
+                      list={this.getOptions(attr.id)}
+                      button={{ name: "移除属性", fn: () => this.removeItem("attributes", index) }}
+                      placeholder="选择属性"
+                      value={attr.option}
+                      onChange={(e) => this.onChange(e, "option")}
+                    ></TableFilter>
+                  </div>
+                </div>
+              ))
+            }
+          </div>
         </div>
 
         <div className="edit-area__item">
@@ -93,8 +255,14 @@ class ProductEdit extends React.Component {
             <span className="edit-area__item__title">库存：</span>
             <div className="edit-area__item__input">
               <TableFilter
-                list={[{ name: "有货", children: null }, { name: "缺货", children: null }]}
-                value="有货"
+                list={this.state.inStock}
+                value={
+                  this.state.data.in_stock ?
+                    this.state.inStock[1].name :
+                    this.state.inStock[0].name
+                }
+                onChange={e => this.onChange(e, "in_stock")}
+
               ></TableFilter>
             </div>
           </div>
@@ -106,7 +274,11 @@ class ProductEdit extends React.Component {
             <div className="edit-area__item__input">
               <input
                 className="edit-area__item__input__ele"
-                type="number" min="0"></input>
+                type="number"
+                min="0"
+                value={this.state.data.limits}
+                onChange={(e) => { this.onChange(e, "limits") }}
+              ></input>
             </div>
           </div>
         </div>
@@ -117,7 +289,11 @@ class ProductEdit extends React.Component {
             <div className="edit-area__item__input">
               <input
                 className="edit-area__item__input__ele"
-                type="number" min="0"></input>
+                type="number"
+                min="0"
+                value={this.state.data.order}
+                onChange={e => this.onChange(e, "order")}
+              ></input>
             </div>
           </div>
         </div>
@@ -127,9 +303,11 @@ class ProductEdit extends React.Component {
             <span className="edit-area__item__title">标签：</span>
             <div className="edit-area__item__input">
               <TableFilter
-                list={categories}
-                button={{ name: "添加", fn: null }}
+                list={this.state.tags}
+                button={{ name: "添加", fn: () => this.addItem("tags") }}
                 placeholder="添加新标签"
+                value={this.state.selected.tags.name}
+                onChange={(e) => { this.onChange(e, "tags") }}
               ></TableFilter>
               {
                 //TODO:此处应为自动搜索匹配的输入框
@@ -139,13 +317,17 @@ class ProductEdit extends React.Component {
 
           <div className="edit-area__item__tags">
             {
-              this.state.productCategory
-              && this.state.productCategory.map((item, index) => {
+              this.state.data.tags
+              && this.state.data.tags.map((item, index) => {
                 return (
                   <span
                     key={index}
                     className="edit-area__item__tag">
-                    {item}<span className="edit-area__item__tag__delete">x</span>
+                    {item.name}
+                    <span
+                      className="edit-area__item__tag__delete"
+                      onClick={() => { this.removeItem("tags", index) }}
+                    >x</span>
                   </span>
                 )
               })
@@ -161,27 +343,39 @@ class ProductEdit extends React.Component {
           <span className="product-status__item__title">状态:</span>
           <TableFilter
             list={[{ name: "待发布", children: null }, { name: "已发布", children: null }]}
-            value="待发布"
+            value={this.state.data.status}
+            onChange={(e) => { this.onChange(e, "status") }}
           ></TableFilter>
         </div>
         <div className="product-status__item">
           <span className="product-status__item__title">发布于:</span>
-          <input type="datetime-local" value="2020-11-06T18:06"></input>
+          <input
+            type="datetime-local"
+            value={this.state.data.modifiedDate}
+            onChange={(e) => { this.onChange(e, "modifiedDate") }}
+          ></input>
         </div>
       </React.Fragment>
     )
 
     return (
       <Content isfolded={this.props.isfolded}>
-        <ContentHeader title="产品编辑" addBtnPath="/products/edit" />
+        <ContentHeader title="产品编辑" addBtnPath="/products/edit/new" />
         <ContentEdit
           editArea={
-            <EditArea>{areaContent}</EditArea>
+            <EditArea
+              value={this.state.data.name}
+              onChange={e => this.onChange(e, "name")}
+            >{areaContent}</EditArea>
           }
           controlArea={
             <React.Fragment>
               <ControlBox
-                editBtns={[{ name: "复制", fn: null }, { name: "移至回收站", fn: null }]} updateBtn={{ on: true, fn: null }} >
+                editBtns={[
+                  { name: "复制", fn: null },
+                  { name: "移至回收站", fn: this.removeProduct },
+                ]}
+                updateBtn={{ on: true, fn: this.updateData }} >
                 {status}
               </ControlBox>
               <ImgUpdater title="产品图片" />

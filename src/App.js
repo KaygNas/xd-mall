@@ -64,8 +64,8 @@ class App extends React.Component {
                 ></Sider>
 
                 <Switch>
-                    <Route path="/products/edit">
-                        <ProductEdit isfolded={this.state.isfolded}></ProductEdit>
+                    <Route exact path="/products/categories">
+                        <Categories isfolded={this.state.isfolded}></Categories>
                     </Route>
                     <Route path="/products/categories/edit/:id"
                         children={(props) => (
@@ -75,9 +75,7 @@ class App extends React.Component {
                                 history={props.history} />
                         )}
                     />
-                    <Route exact path="/products/categories">
-                        <Categories isfolded={this.state.isfolded}></Categories>
-                    </Route>
+
                     <Route exact path="/products/tags">
                         <Tags isfolded={this.state.isfolded}></Tags>
                     </Route>
@@ -89,6 +87,7 @@ class App extends React.Component {
                                 history={props.history} />
                         )}
                     />
+
                     <Route exact path="/products/attributes">
                         <Attributes isfolded={this.state.isfolded}></Attributes>
                     </Route>
@@ -100,9 +99,22 @@ class App extends React.Component {
                                 history={props.history} />
                         )}
                     />
+
+                    <Route path="/products/edit/:id"
+                        children={(props) => {
+                            return (
+                                <ProductEdit
+                                    isfolded={this.state.isfolded}
+                                    params={props.match.params}
+                                    history={props.history}
+                                ></ProductEdit>
+                            )
+                        }}
+                    ></Route>
                     <Route path="/">
                         <Products isfolded={this.state.isfolded}></Products>
                     </Route>
+
                 </Switch>
             </Router >
         );

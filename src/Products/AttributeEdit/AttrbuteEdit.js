@@ -41,23 +41,23 @@ class AttributeEdit extends React.Component {
 
     getData = () => {
         let emptyItem = { id: "", name: "", options: [] };
-        ca.getItemData(this, "attributes", emptyItem);
+        ca.getItemData({ that: this, type: "attributes", emptyItem: emptyItem });
     }
 
     addItem = () => {
-        ca.addItem(this, "options");
+        ca.addItem({ that: this, type: "options", item: this.state.newItem });
     }
 
-    removeItem = (index) => {
-        ca.removeItem(this, "options", index)
+    removeItem = (id) => {
+        ca.removeItem({ that: this, type: "options", id: id })
     }
 
     updateData = () => {
-        ca.updateData(this, "attributes", "/products/attributes/edit/");
+        ca.updateData({ that: this, type: "attributes", url: "/products/attributes/edit/" });
     }
 
     removeAttr = () => {
-        ca.deleteData("attributes", this.state.id, () => {
+        ca.deleteData({ type: "attributes", key: this.state.id }, () => {
             this.props.history.push("/products/attributes");
         });
     }

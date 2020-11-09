@@ -18,7 +18,7 @@ function ContentHeader(props) {
             <div className="content-filters">
                 {
                     props.status &&
-                    <StatusFilter status={props.status} statusIdx={props.statusIdx} selectStatus={props.selectStatus}></StatusFilter>
+                    <StatusFilter status={props.status} curStatus={props.curStatus} selectStatus={props.selectStatus}></StatusFilter>
                 }
                 {
                     props.searchBox &&

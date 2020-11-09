@@ -29,7 +29,10 @@
   background-color: $deep-grey-2;
 }
 
-.current a {
+.current .normal-link,
+.current .normal-link:hover,
+.current .normal-link:active {
   font-weight: 500;
   color: $deep-blue-2;
+  box-shadow: none;
 }

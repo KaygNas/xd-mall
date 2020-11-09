@@ -38,19 +38,10 @@ class CategoryEdit extends React.Component {
     }
 
     componentDidMount = () => {
-        this.getCategories();
-    }
-
-    getCategories = () => {
-        //TODO:categories中应排除自身,并组织成有层级的结构
-        DB.categories.get("all").then(res => {
-            console.log("recieve response", res);
-            if (res.status.code === 0) {
-                res.value.push({ id: "", name: "无" });
-                this.setState({
-                    categories: res.value,
-                })
-            }
+        ca.getAllItemsData({
+            that: this,
+            type: "categories",
+            setData: "categories",
         })
     }
 
@@ -98,8 +89,6 @@ class CategoryEdit extends React.Component {
     }
 
     getData = () => {
-        const timeNow = new Date(Date.now() + 8 * 3600 * 1000)
-            .toISOString().replace(/(:\d+\.\w+)$/, "");
         let emptyItem = {
             id: "",
             name: "",
@@ -109,25 +98,25 @@ class CategoryEdit extends React.Component {
             children: [],
             productsCollection: [],
             order: "",
-            modifiedDate: timeNow,
+            modifiedDate: ca.getLocaleISOTime({ zoneoff: 8 }),
         };
-        ca.getItemData(this, "categories", emptyItem);
+        ca.getItemData({ that: this, type: "categories", emptyItem: emptyItem });
     }
 
     addItem = () => {
-        ca.addItem(this, "productsCollection");
+        ca.addItem({ that: this, type: "productsCollection" });
     }
 
     removeItem = (index) => {
-        ca.removeItem(this, "productsCollection", index)
+        ca.removeItem({ that: this, type: "productsCollection", id: index })
     }
 
     updateData = () => {
-        ca.updateData(this, "categories", "/products/categories/edit/");
+        ca.updateData({ that: this, type: "categories", url: "/products/categories/edit/" });
     }
 
     removeCat = () => {
-        ca.deleteData("categories", this.state.id, () => {
+        ca.deleteData({ type: "categories", key: this.state.id }, () => {
             this.props.history.push("/products/categories");
         });
     }

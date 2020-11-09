@@ -41,23 +41,23 @@ class TagEdit extends React.Component {
 
     getData = () => {
         let emptyItem = { id: "", name: "", products: [] }
-        ca.getItemData(this, "tags", emptyItem);
+        ca.getItemData({ that: this, type: "tags", emptyItem: emptyItem });
     }
 
     addItem = () => {
-        ca.addItem(this, "products");
+        ca.addItem({ that: this, type: "products", item: this.state.newItem });
     }
 
     removeItem = (id) => {
-        ca.removeItem(this, id)
+        ca.removeItem({ that: this, type: "products", id: id })
     }
 
     updateData = () => {
-        ca.updateData(this, "tags", "/products/tags/edit/");
+        ca.updateData({ that: this, type: "tags", url: "/products/tags/edit/" });
     }
 
     removeTag = () => {
-        ca.deleteData("tags", this.state.id, () => {
+        ca.deleteData({ type: "tags", key: this.state.id }, () => {
             this.props.history.push("/products/tags");
         });
     }
