@@ -1,0 +1,4 @@
+- Tags/Attributes delete btn fn
+- Edit add productItem fn
+- some alergic action need comfirm box
+- getData/removeItem/updateData these fn may could be reused

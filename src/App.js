@@ -67,18 +67,28 @@ class App extends React.Component {
                     <Route path="/products/edit">
                         <ProductEdit isfolded={this.state.isfolded}></ProductEdit>
                     </Route>
-                    <Route path="/products/categories/edit">
-                        <CategoryEdit isfolded={this.state.isfolded}></CategoryEdit>
-                    </Route>
+                    <Route path="/products/categories/edit/:id"
+                        children={(props) => (
+                            <CategoryEdit
+                                isfolded={this.state.isfolded}
+                                params={props.match.params}
+                                history={props.history} />
+                        )}
+                    />
                     <Route exact path="/products/categories">
                         <Categories isfolded={this.state.isfolded}></Categories>
                     </Route>
                     <Route exact path="/products/tags">
                         <Tags isfolded={this.state.isfolded}></Tags>
                     </Route>
-                    <Route path="/products/tags/edit">
-                        <TagEdit isfolded={this.state.isfolded}></TagEdit>
-                    </Route>
+                    <Route path="/products/tags/edit/:id"
+                        children={(props) => (
+                            <TagEdit
+                                isfolded={this.state.isfolded}
+                                params={props.match.params}
+                                history={props.history} />
+                        )}
+                    />
                     <Route exact path="/products/attributes">
                         <Attributes isfolded={this.state.isfolded}></Attributes>
                     </Route>

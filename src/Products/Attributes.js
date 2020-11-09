@@ -2,7 +2,7 @@ import React from "react";
 import ContentHeader from "../components/ContentHeader/ContentHeader";
 import ContentTable from "../components/ContentTable/ContentTable";
 import Content from "../components/Content/Content";
-import { DATABASE as DB } from "../utils";
+import { commonAction as ca } from "../utils";
 import { Link } from "react-router-dom";
 
 class Attributes extends React.Component {
@@ -18,15 +18,18 @@ class Attributes extends React.Component {
                 { name: "选项", col: 6 },
             ],
         }
+    }
 
-        DB.attributes.get("all").then(res => {
-            if (res.status.code === 0) {
-                console.log(res);
-                this.setState({
-                    data: res.value,
-                })
-            }
-        })
+    componentDidMount = () => {
+        this.getData();
+    }
+
+    getData = () => {
+        ca.getAllItemsData(this, "attributes");
+    }
+
+    removeAttr = (key) => {
+        ca.deleteData("attributes", key, this.getData);
     }
 
     render() {
@@ -56,7 +59,9 @@ class Attributes extends React.Component {
                                         <span className="normal-link">快速编辑</span>
                                     </li>
                                     <li className="table__list-item__name__controlor__item">
-                                        <span className="delete">删除</span>
+                                        <span className="delete"
+                                            onClick={() => { this.removeAttr(item.id) }}
+                                        >删除</span>
                                     </li>
                                 </ul>
                             </div>

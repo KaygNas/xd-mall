@@ -7,8 +7,7 @@ import {
     ControlBox,
 } from "../../components/ContentEdit/ContentEdit";
 import ContentTable from "../../components/ContentTable/ContentTable";
-import { DATABASE as DB } from "../../utils";
-import { Redirect } from "react-router-dom";
+import { commonAction as ca } from "../../utils";
 
 
 class AttributeEdit extends React.Component {
@@ -21,37 +20,8 @@ class AttributeEdit extends React.Component {
             tableHead: [
                 { name: "选项", col: 12 },
             ],
-            redirect: false,
         }
 
-    }
-
-    getData = () => {
-        //获取数据
-        if (this.props.params.id === "new"
-            && this.props.params.id !== this.state.id) {
-            this.setState({
-                id: this.props.params.id,
-                data: { id: "", name: "", options: [] },
-            })
-        } else if (this.props.params.id !== this.state.id) {
-            DB.attributes.get(this.props.params.id).then(res => {
-                if (res.status.code === 0) {
-                    this.setState({
-                        id: this.props.params.id,
-                        data: res.value,
-                    })
-                }
-            })
-        }
-    }
-
-    updateData = () => {
-        let id = this.state.id === "new" ? "" : this.state.id;
-        DB.attributes.set(id, this.state.data).then(res => {
-            this.props.history.push(
-                "/products/attributes/edit/" + res.value.id);
-        });
     }
 
     onChange = (e, content) => {
@@ -69,28 +39,34 @@ class AttributeEdit extends React.Component {
         console.log(e.target.value)
     }
 
+    getData = () => {
+        let emptyItem = { id: "", name: "", options: [] };
+        ca.getItemData(this, "attributes", emptyItem);
+    }
+
     addItem = () => {
-        let data = this.state.data;
-        data.options.push(this.state.newItem);
-        this.setState({
-            data: data,
-            newItem: "",
-        })
+        ca.addItem(this, "options");
     }
 
     removeItem = (index) => {
-        let data = this.state.data;
-        data.options.splice(index, 1);
-        this.setState({
-            data: data,
-        })
+        ca.removeItem(this, "options", index)
+    }
+
+    updateData = () => {
+        ca.updateData(this, "attributes", "/products/attributes/edit/");
+    }
+
+    removeAttr = () => {
+        ca.deleteData("attributes", this.state.id, () => {
+            this.props.history.push("/products/attributes");
+        });
     }
 
     render() {
         this.getData();
         const tableBody = this.state.data.options.map((item, index) => {
             return (
-                <tr key={index}>
+                <React.Fragment>
                     <td>
                         <div className="table__list-item__name">
                             <div className="table__list-item__name__title">
@@ -110,7 +86,7 @@ class AttributeEdit extends React.Component {
                             </div>
                         </div>
                     </td>
-                </tr>
+                </React.Fragment>
             )
         })
 
@@ -139,7 +115,7 @@ class AttributeEdit extends React.Component {
                     }
                     controlArea={
                         <ControlBox
-                            editBtns={[{ name: "删除", fn: null }]}
+                            editBtns={[{ name: "删除", fn: this.removeAttr }]}
                             updateBtn={{ on: true, fn: this.updateData }} >
                         </ControlBox>
                     } />

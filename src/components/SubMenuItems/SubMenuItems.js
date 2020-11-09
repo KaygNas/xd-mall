@@ -30,13 +30,15 @@ class SubMenuItems extends React.Component {
                 {
                     this.props.listItems.map((item, index) => {
                         return (
-                            <li
-                                key={index}
-                                className={"menu__sub-menu__title " + (index === this.state.selectedItem ? "menu__sub-menu__title--selected" : "")}
-                                onClick={() => this.selectListItem(index)}
-                            >
-                                <Link to={item.path}> {item.title}</Link>
-                            </li>
+                            <Link to={item.path}>
+                                <li
+                                    key={index}
+                                    className={"menu__sub-menu__title " + (index === this.state.selectedItem ? "menu__sub-menu__title--selected" : "")}
+                                    onClick={() => this.selectListItem(index)}
+                                >
+                                    {item.title}
+                                </li>
+                            </Link>
                         );
                     })
                 }

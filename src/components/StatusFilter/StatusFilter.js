@@ -11,8 +11,8 @@ function StatusFilter(props) {
                     return (
                         <li
                             key={index}
-                            className={"status-filter__item " + (props.statusIdx === index ? "current" : "")}
-                            onClick={() => { props.selectStatus(index); }}
+                            className={"status-filter__item " + (props.curStatus === item.status ? "current" : "")}
+                            onClick={() => { props.selectStatus(item.status); }}
                         >
                             <a>{item.status + "(" + item.itemQty + ")"}</a>
                         </li>

@@ -6,7 +6,10 @@ function PageTurner(props) {
             <button className="turner__btn btn-2">«</button>
             <button className="turner__btn  btn-2">‹</button>
             <div className="turner__indicator">
-                第<input className="turner__indicator__input" value={props.curPage}></input>页，共{props.totalPage}页
+                第<input className="turner__indicator__input"
+                    value={props.curPage}
+                    onChange={props.onChange}
+                ></input>页，共{props.totalPage}页
             </div>
             <button className="turner__btn btn-2">›</button>
             <button className="turner__btn btn-2">»</button>
