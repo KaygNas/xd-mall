@@ -1,28 +1,11 @@
 import PageTurner from "../PageTurner/PageTurner";
-import { TableFilter, ItemInputer } from "../TableControler/TableControler";
 import "./ContentTable.scss";
 
 function ContentTable(props) {
     return (
         <div>
             <div className="table-nav">
-                {
-                    props.filter &&
-                    <TableFilter
-                        placeholder={props.filter.placeholder}
-                        list={props.filter.list}
-                        button={props.filter.button}
-                    ></TableFilter>
-                }
-                {
-                    props.inputer &&
-                    <ItemInputer
-                        placeholder={props.inputer.placeholder}
-                        value={props.inputer.value}
-                        onChange={props.inputer.onChange}
-                        button={props.inputer.button}
-                    ></ItemInputer>
-                }
+                {props.tableNav}
                 <PageTurner curPage="1" totalPage="233"></PageTurner>
             </div>
             <table className="table">
@@ -70,23 +53,7 @@ function ContentTable(props) {
                 </tfoot>
             </table>
             <div className="table-nav">
-                {
-                    props.filter &&
-                    <TableFilter
-                        placeholder={props.filter.placeholder}
-                        list={props.filter.list}
-                        button={props.filter.button}
-                    ></TableFilter>
-                }
-                {
-                    props.inputer &&
-                    <ItemInputer
-                        placeholder={props.inputer.placeholder}
-                        value={props.inputer.value}
-                        onChange={props.inputer.onChange}
-                        button={props.inputer.button}
-                    ></ItemInputer>
-                }
+                {props.tableNav}
                 <PageTurner curPage="1" totalPage="233"></PageTurner>
             </div>
 

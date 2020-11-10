@@ -8,6 +8,7 @@ import {
 } from "../../components/ContentEdit/ContentEdit";
 import ContentTable from "../../components/ContentTable/ContentTable";
 import { commonAction as ca } from "../../utils";
+import { ItemInputer } from "../../components/TableControler/TableControler";
 
 class TagEdit extends React.Component {
     constructor(props) {
@@ -110,14 +111,15 @@ class TagEdit extends React.Component {
                             <ContentTable
                                 tableHead={this.state.tableHead}
                                 tableBody={tableBody}
-                                inputer={
+                                tableNav={
                                     //TODO:待更新,应该是带自动检索的输入框
-                                    {
-                                        placeholder: "输入新项目",
-                                        value: this.state.newItem,
-                                        onChange: (e) => this.onChange(e, "newItem"),
-                                        button: { name: "添加新项目", fn: this.addItem }
-                                    }}
+                                    <ItemInputer
+                                        placeholder="输入新项目"
+                                        value={this.state.newItem}
+                                        onChange={(e) => this.onChange(e, "newItem")}
+                                        button={{ name: "添加新项目", fn: this.addItem }}
+                                    />
+                                }
                             ></ContentTable>
                         </EditArea>
                     }

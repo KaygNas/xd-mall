@@ -26,9 +26,10 @@
   border: 1px solid $normal-grey-2;
 }
 
-.table th {
-  padding-top: 9px;
-  padding-bottom: 9px;
+.table th,
+.table td {
+  padding: 9px;
+  line-height: 1.5;
 }
 
 .valign-middle {
@@ -41,9 +42,4 @@
 
 .table__row:nth-child(2n-1) {
   background-color: $shallow-grey-2;
-}
-
-.table__row td {
-  padding-top: 13px;
-  padding-bottom: 13px;
 }

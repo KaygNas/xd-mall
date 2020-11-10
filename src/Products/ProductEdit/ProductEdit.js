@@ -47,9 +47,13 @@ class ProductEdit extends React.Component {
 
   componentDidMount = () => {
     ca.getAllItemsData({
-      type: "categories",
       that: this,
-      setData: "categories",
+      type: "categories",
+    }, (res) => {
+      res.value.push({ id: "", name: "无" });
+      this.setState({
+        categories: res.value,
+      })
     })
     ca.getAllItemsData({
       type: "attributes",
@@ -168,8 +172,7 @@ class ProductEdit extends React.Component {
                     key={index}
                     className="edit-area__item__tag">
                     {
-                      //TODO:应改为其父类的拼接
-                      item.name
+                      ca.joinWithParent(this.state.categories, item.id)
                     }
                     <span
                       className="edit-area__item__tag__delete"

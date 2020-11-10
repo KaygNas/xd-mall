@@ -8,10 +8,11 @@ class BaseLocalStorage {
         return new Map(rawData);
     }
 
-    generateId(tableData) {
-        let lastId = tableData.size > 0 ?
-            Array.from(tableData)[tableData.size - 1][0] : 0;
-        return ++lastId + "";
+    autoIncrementId() {
+        let autoIcrementId = this.storage.getItem(this.tableName + "-autoIcrementId");
+        autoIcrementId = (autoIcrementId ? ++autoIcrementId : 1).toString();
+        this.storage.setItem(this.tableName + "-autoIcrementId", autoIcrementId);
+        return autoIcrementId;
     }
 
     setItem(key, value, callback) {
@@ -19,7 +20,7 @@ class BaseLocalStorage {
             result,
             tableData = this.getTable();
         if (!key) {
-            value.id = this.generateId(tableData);
+            value.id = this.autoIncrementId();
             tableData.set(value.id, value);
         } else if (tableData.has(key)) {
             tableData.set(key, value);
@@ -117,6 +118,8 @@ Object.assign(BaseLocalStorage.prototype, {
     },
 })
 
+
+//TODO:优化这四个类,整合重复的代码
 class Products extends BaseLocalStorage {
     constructor() {
         super("products");
@@ -148,10 +151,27 @@ class Products extends BaseLocalStorage {
         })
     }
 
-    get(id) {
+    get(id, filter) {
+        const filterData = (data, filter) => {
+            return data.filter((item) => {
+                for (let key in filter) {
+                    console.log(`filter${key} , item${key}`, filter[key] !== item[key]);
+                    if (Array.isArray(item[key])) {
+                        return item[key].some(val => val.id === filter[key].id)
+                    } else if (filter[key] !== item[key]) {
+                        return false;
+                    }
+                }
+                return true;
+            })
+        }
+
         return new Promise((resolve, reject) => {
             this.getItem(id, (res) => {
                 if (res.status.code === 0) {
+                    if (id === "all" && filter) {
+                        res.value = filterData(res.value, filter);
+                    }
                     resolve(res);
                 } else {
                     reject(res);
@@ -259,7 +279,10 @@ class Categories extends BaseLocalStorage {
         const filterData = (data, filter) => {
             return data.filter((item) => {
                 for (let key in filter) {
-                    if (filter[key] !== item[key]) {
+                    console.log(`filter${key} , item${key}`, filter[key] !== item[key]);
+                    if (Array.isArray(item[key])) {
+                        return item[key].some(val => val.id === filter[key].id)
+                    } else if (filter[key] !== item[key]) {
                         return false;
                     }
                 }
@@ -275,6 +298,7 @@ class Categories extends BaseLocalStorage {
                         res.value = colChildren("", res.value);
                         if (filter) {
                             res.value = filterData(res.value, filter);
+                            console.log("res after filter", res.value);
                         }
                     } else {
                         let categories = this.getItem("all");
@@ -357,11 +381,11 @@ export const DATABASE = {
 
 const addItem = ({ that, type, item }) => {
     let data = that.state.data;
-    //拦截相同的选项,第一判断标准为 id, 第二判断标准为 name
+    //拦截相同的选项,首先比较其id,否则则比较其本身 
     if (item.id) {
         if (data[type].some(val => val.id === item.id)) return;
     } else {
-        if (data[type].some(val => val.name === item.name)) return;
+        if (data[type].some(val => val === item)) return;
     }
     data[type].push(item);
     that.setState({
@@ -435,6 +459,41 @@ const getLocaleISOTime = ({ zoneoff }) => {
         .toISOString().replace(/(:\d+\.\w+)$/, "");
 }
 
+const getAllStatus = (data) => {
+    let status = [],
+        stat = new Map();
+    data.forEach((item) => {
+        let value = stat.get(item.status);
+        if (value) {
+            stat.set(item.status, ++value);
+        } else {
+            stat.set(item.status, 1)
+        }
+    })
+    status.push({ status: "全部", itemQty: data.length });
+    stat.forEach((val, key) => {
+        status.push({ status: key, itemQty: val });
+    })
+    return status;
+}
+
+const joinWithParent = (categories, id) => {
+    const helper = (category, id, parent) => {
+        if (category.id === id) {
+            return parent + category.name;
+        };
+        if (!category.children || category.children === 0) {
+            return "";
+        };
+        let res = "";
+        for (let child of category.children) {
+            res += helper(child, id, category.name + "/");
+        }
+        return res;
+    }
+    return categories.reduce((acc, cur) => (acc + helper(cur, id, "")), "");
+}
+
 export const commonAction = {
     addItem: addItem,
     removeItem: removeItem,
@@ -443,5 +502,7 @@ export const commonAction = {
     getAllItemsData: getAllItemsData,
     deleteData: deleteData,
     getLocaleISOTime: getLocaleISOTime,
+    getAllStatus: getAllStatus,
+    joinWithParent: joinWithParent,
 }
 

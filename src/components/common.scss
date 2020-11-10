@@ -101,6 +101,10 @@ $deep-grey-2: #555555;
   box-shadow: 0 0 2px 0 $shallow-blue-2;
 }
 
+.sepearate:not(:first-child)::before {
+  content: "、";
+}
+
 .delete {
   color: #aa4444;
 }

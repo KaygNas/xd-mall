@@ -38,14 +38,24 @@ class TableFilter extends React.Component {
         this.props.onChange && this.props.onChange(e);
     }
 
+    onClick = (e) => {
+        this.dropList(e);
+        this.props.onClick && this.props.onClick(e);
+    }
+
+    onBlur = (e) => {
+        this.dropList(e);
+        this.props.onBlur && this.props.onBlur(e);
+    }
+
     render() {
         return (
             <div className="table-filter-wraper"
             >
                 <div
                     className="table-filter"
-                    onClick={this.dropList}
-                    onBlur={this.dropList}
+                    onClick={this.onClick}
+                    onBlur={this.onBlur}
                 >
                     <input
                         className="table-filter__input"
@@ -130,6 +140,7 @@ class ItemInputer extends React.Component {
                     placeholder={this.props.placeholder}
                     value={this.props.value}
                     onChange={this.props.onChange}
+                    onClick={this.props.onClick}
                 ></input>
                 {
                     this.props.button &&

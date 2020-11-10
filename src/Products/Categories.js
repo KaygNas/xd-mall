@@ -39,21 +39,7 @@ class Categories extends React.Component {
         ca.getAllItemsData({ type: "categories" }, (res) => {
             let data = this.flatArr(res.value),
                 headerData = this.state.headerData,
-                status = [],
-                stat = new Map();
-            data.forEach((item) => {
-                let value = stat.get(item.status);
-                if (value) {
-                    stat.set(item.status, ++value);
-                } else {
-                    stat.set(item.status, 1)
-                }
-            })
-
-            status.push({ status: "全部", itemQty: data.length });
-            stat.forEach((val, key) => {
-                status.push({ status: key, itemQty: val });
-            })
+                status = ca.getAllStatus(data);
             headerData.status = status;
 
             this.setState({
@@ -78,6 +64,7 @@ class Categories extends React.Component {
             { type: "categories", filter: filter },
             (res) => {
                 let data = this.flatArr(res.value);
+                console.log("data=", data, "filter:", filter);
                 this.setState({
                     data: data,
                     curStatus: status,

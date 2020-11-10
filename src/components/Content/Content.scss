@@ -70,11 +70,11 @@
   color: #aa4444;
 }
 
-.product__regular-price {
+.product__price--strike {
   color: $deep-grey-1;
   text-decoration: line-through;
 }
 
-.product__sale-price {
+.product__price {
   margin-left: 4px;
 }

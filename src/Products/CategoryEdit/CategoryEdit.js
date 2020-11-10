@@ -7,7 +7,7 @@ import {
     ControlBox,
     ImgUpdater
 } from "../../components/ContentEdit/ContentEdit";
-import { TableFilter } from "../../components/TableControler/TableControler";
+import { TableFilter, ItemInputer } from "../../components/TableControler/TableControler";
 import ContentTable from "../../components/ContentTable/ContentTable";
 import { DATABASE as DB, commonAction as ca } from "../../utils";
 
@@ -37,11 +37,15 @@ class CategoryEdit extends React.Component {
         }
     }
 
-    componentDidMount = () => {
+    getCategories = () => {
         ca.getAllItemsData({
             that: this,
             type: "categories",
-            setData: "categories",
+        }, (res) => {
+            res.value.push({ id: "", name: "无" });
+            this.setState({
+                categories: res.value,
+            })
         })
     }
 
@@ -134,6 +138,7 @@ class CategoryEdit extends React.Component {
                                 placeholder="选择父类"
                                 value={this.state.data.parent.name}
                                 onChange={(e) => { this.onChange(e, "parent") }}
+                                onClick={this.getCategories}
                             ></TableFilter>
                         </div>
                     </div>
@@ -233,14 +238,15 @@ class CategoryEdit extends React.Component {
                                 <ContentTable
                                     tableHead={this.state.tableHead}
                                     tableBody={tableBody}
-                                    inputer={
-                                        //TODO:待更新...应该是带自动检索的输入框
-                                        {
-                                            placeholder: "输入新项目",
-                                            value: this.state.newItem,
-                                            onChange: (e) => this.onChange(e, "newItem"),
-                                            button: { name: "添加新项目", fn: this.addItem }
-                                        }}
+                                    tableNav={
+                                        //TODO:待更新,应该是带自动检索的输入框
+                                        <ItemInputer
+                                            placeholder="输入新项目"
+                                            value={this.state.newItem}
+                                            onChange={(e) => this.onChange(e, "newItem")}
+                                            button={{ name: "添加新项目", fn: this.addItem }}
+                                        />
+                                    }
                                 ></ContentTable>
                             </React.Fragment>
                         </EditArea>
