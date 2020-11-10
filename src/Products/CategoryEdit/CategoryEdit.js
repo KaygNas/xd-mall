@@ -9,7 +9,7 @@ import {
 } from "../../components/ContentEdit/ContentEdit";
 import { TableFilter, ItemInputer } from "../../components/TableControler/TableControler";
 import ContentTable from "../../components/ContentTable/ContentTable";
-import { DATABASE as DB, commonAction as ca } from "../../utils";
+import { commonAction as ca } from "../../utils";
 
 class CategoryEdit extends React.Component {
     constructor(props) {
@@ -188,37 +188,7 @@ class CategoryEdit extends React.Component {
         const tableBody = this.state.data.productsCollection.map((item, index) => {
             return (
                 <React.Fragment>
-                    <td className="valign-middle"><span className="table__list-item__img"></span></td>
-                    <td>
-                        <div className="table__list-item__name">
-                            <div className="table__list-item__name__title">
-                                <a className="normal-link" href="#">
-                                    可口可乐
-              </a>
-                            </div>
-                            <div className="product__attr">
-                                规格：500mL*24
-        </div>
-                            <div className="table__list-item__name__controlor">
-                                <ul>
-                                    <li className="table__list-item__name__controlor__item">
-                                        ID:1234
-                </li>
-                                    <li className="table__list-item__name__controlor__item">
-                                        <a className="normal-link" href="#">
-                                            编辑
-                    </a>
-                                    </li>
-                                    <li className="table__list-item__name__controlor__item">
-                                        <a href="#">
-                                            移除本项
-                    </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </td>
-                    <td><a className="normal-link" href="#">碳酸饮料</a>、<a className="normal-link" href="#">可口可乐</a></td>
+
                 </React.Fragment>
             )
         });

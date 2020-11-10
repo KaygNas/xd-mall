@@ -6,7 +6,10 @@ function ContentTable(props) {
         <div>
             <div className="table-nav">
                 {props.tableNav}
-                <PageTurner curPage="1" totalPage="233"></PageTurner>
+                <PageTurner
+                    curPage="1"
+                    totalPage="233"
+                ></PageTurner>
             </div>
             <table className="table">
                 <thead className="table__head">
@@ -54,7 +57,10 @@ function ContentTable(props) {
             </table>
             <div className="table-nav">
                 {props.tableNav}
-                <PageTurner curPage="1" totalPage="233"></PageTurner>
+                <PageTurner
+                    curPage="1"
+                    totalPage="233"
+                ></PageTurner>
             </div>
 
         </div >

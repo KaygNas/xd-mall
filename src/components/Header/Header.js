@@ -5,7 +5,7 @@ function Header(props) {
     return (
         <header className="header">
             <ShopFilled className="header__icon" />
-            <a className="header__title" href="#">{props.title}</a>
+            <a className="header__title" href="/#">{props.title}</a>
         </header>
     );
 }

@@ -1,8 +1,4 @@
 class BaseLocalStorage {
-    constructor(tableName) {
-        this.tableName = tableName;
-    }
-
     getTable() {
         let rawData = JSON.parse(this.storage.getItem(this.tableName)) || [];
         return new Map(rawData);
@@ -119,27 +115,13 @@ Object.assign(BaseLocalStorage.prototype, {
 })
 
 
-//TODO:优化这四个类,整合重复的代码
-class Products extends BaseLocalStorage {
-    constructor() {
-        super("products");
+class Table extends BaseLocalStorage {
+    constructor(tableName) {
+        super();
+        this.tableName = tableName;
     }
+
     set(id, obj) {
-        /* obj = {
-                id:id,
-                name: name,
-                attributes:Array,
-                categories:Array,
-                images:Array,
-                status:String,
-                order:Number || String,
-                regular_price:Number || String,
-                sale_price:Number || String,
-                in_stock:Boolean,
-                limits:Number || String,
-                tags:Array,
-            }
-        */
         return new Promise((resolve, reject) => {
             this.setItem(id, obj, (res) => {
                 if (res.status.code === 0) {
@@ -193,190 +175,67 @@ class Products extends BaseLocalStorage {
     }
 }
 
-class Attributes extends BaseLocalStorage {
-    constructor() {
-        super("attributes");
-    }
+const products = new Table("products"),
+    categories = new Table("categories"),
+    attributes = new Table("attributes"),
+    tags = new Table("tags");
 
-    set(id, obj) {
-        return new Promise((resolve, reject) => {
-            this.setItem(id, obj, (res) => {
-                if (res.status.code === 0) {
-                    resolve(res);
-                } else {
-                    reject(res);
-                };
-            });
-        })
-    }
-
-    get(id) {
-        return new Promise((resolve, reject) => {
-            this.getItem(id, (res) => {
-                if (res.status.code === 0) {
-                    resolve(res);
-                } else {
-                    reject(res);
-                };
-            });
-        })
-    }
-
-    remove(id) {
-        return new Promise((resolve, reject) => {
-            this.removeItem(id, (res) => {
-                if (res.status.code === 0) {
-                    resolve(res);
-                } else {
-                    reject(res);
-                };
-            });
-        })
-    }
-}
-
-class Categories extends BaseLocalStorage {
-    constructor() {
-        super("categories");
-    }
-
-    set(id, obj) {
-        /* obj = {
-            id:id,
-            name: name,
-            images:Array,
-            parent:Object,
-            status:String,
-            children:Array,
-            productsCollection:Array,
-            order:String || Number,
-            modifiedDate:String,
+//categories的数据需要额外的处理
+categories.get = function (id, filter) {
+    const colChildren = (parentId, data) => {
+        let children = [];
+        for (let item of data) {
+            if (item.parent.id === parentId) {
+                item.children = colChildren(item.id, data);
+                children.push(item);
             }
-        */
-        return new Promise((resolve, reject) => {
-            this.setItem(id, obj, (res) => {
-                if (res.status.code === 0) {
-                    resolve(res);
-                } else {
-                    reject(res);
-                };
-            });
-        })
+        }
+        return children;
     }
 
-    get(id, filter) {
-        const colChildren = (parentId, data) => {
-            let children = [];
-            for (let item of data) {
-                if (item.parent.id === parentId) {
-                    item.children = colChildren(item.id, data);
-                    children.push(item);
+    const filterData = (data, filter) => {
+        return data.filter((item) => {
+            for (let key in filter) {
+                console.log(`filter${key} , item${key}`, filter[key] !== item[key]);
+                if (Array.isArray(item[key])) {
+                    return item[key].some(val => val.id === filter[key].id)
+                } else if (filter[key] !== item[key]) {
+                    return false;
                 }
             }
-            return children;
-        }
+            return true;
+        })
+    }
 
-        const filterData = (data, filter) => {
-            return data.filter((item) => {
-                for (let key in filter) {
-                    console.log(`filter${key} , item${key}`, filter[key] !== item[key]);
-                    if (Array.isArray(item[key])) {
-                        return item[key].some(val => val.id === filter[key].id)
-                    } else if (filter[key] !== item[key]) {
-                        return false;
+    return new Promise((resolve, reject) => {
+        this.getItem(id, (res) => {
+            //TODO:增加productsCollection的数据处理
+            if (res.status.code === 0) {
+                if (id === "all") {
+                    res.value = colChildren("", res.value);
+                    if (filter) {
+                        res.value = filterData(res.value, filter);
+                        console.log("res after filter", res.value);
                     }
+                } else {
+                    let categories = this.getItem("all");
+                    res.value.children = colChildren(res.value.id, categories);
                 }
-                return true;
-            })
-        }
-
-        return new Promise((resolve, reject) => {
-            this.getItem(id, (res) => {
-                //TODO:增加productsCollection的数据处理
-                if (res.status.code === 0) {
-                    if (id === "all") {
-                        res.value = colChildren("", res.value);
-                        if (filter) {
-                            res.value = filterData(res.value, filter);
-                            console.log("res after filter", res.value);
-                        }
-                    } else {
-                        let categories = this.getItem("all");
-                        res.value.children = colChildren(res.value.id, categories);
-                    }
-                    console.log("get categories", res);
-                    resolve(res);
-                } else {
-                    reject(res);
-                };
-            });
-        })
-    }
-
-    remove(id) {
-        return new Promise((resolve, reject) => {
-            this.removeItem(id, (res) => {
-                if (res.status.code === 0) {
-                    resolve(res);
-                } else {
-                    reject(res);
-                };
-            });
-        })
-    }
+                console.log("get categories", res);
+                resolve(res);
+            } else {
+                reject(res);
+            };
+        });
+    })
 }
 
-class Tags extends BaseLocalStorage {
-    constructor() {
-        super("tags");
-    }
-    set(id, obj) {
-        /* obj = {
-             id:id,
-             name: name,
-         }
-         */
-        return new Promise((resolve, reject) => {
-            this.setItem(id, obj, (res) => {
-                if (res.status.code === 0) {
-                    resolve(res);
-                } else {
-                    reject(res);
-                };
-            });
-        })
-    }
-
-    get(id) {
-        return new Promise((resolve, reject) => {
-            this.getItem(id, (res) => {
-                if (res.status.code === 0) {
-                    resolve(res);
-                } else {
-                    reject(res);
-                };
-            });
-        })
-    }
-
-    remove(id) {
-        return new Promise((resolve, reject) => {
-            this.removeItem(id, (res) => {
-                if (res.status.code === 0) {
-                    resolve(res);
-                } else {
-                    reject(res);
-                };
-            });
-        })
-    }
-}
 
 export const DATABASE = {
-    products: new Products(),
-    categories: new Categories(),
-    attributes: new Attributes(),
-    tags: new Tags(),
+    products: products,
+    categories: categories,
+    attributes: attributes,
+    tags: tags,
 }
 
 const addItem = ({ that, type, item }) => {

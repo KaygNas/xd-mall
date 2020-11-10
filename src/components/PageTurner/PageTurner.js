@@ -8,7 +8,7 @@ function PageTurner(props) {
             <div className="turner__indicator">
                 第<input className="turner__indicator__input"
                     value={props.curPage}
-                    onChange={props.onChange}
+                    readOnly={true}
                 ></input>页，共{props.totalPage}页
             </div>
             <button className="turner__btn btn-2">›</button>

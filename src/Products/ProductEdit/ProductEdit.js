@@ -7,7 +7,7 @@ import {
   ControlBox,
   ImgUpdater
 } from "../../components/ContentEdit/ContentEdit";
-import { TableFilter, ItemInputer } from "../../components/TableControler/TableControler";
+import { TableFilter } from "../../components/TableControler/TableControler";
 import "./ProductEdit.scss";
 import { commonAction as ca } from "../../utils";
 
@@ -34,8 +34,8 @@ class ProductEdit extends React.Component {
       attributes: [],
       tags: [],
       inStock: [
-        { name: "缺货", children: null },
-        { name: "有货", children: null },
+        { id: 0, name: "缺货", children: null },
+        { id: 1, name: "有货", children: null },
       ],
       selected: {
         categories: { id: "", name: "" },
@@ -91,9 +91,9 @@ class ProductEdit extends React.Component {
   }
 
   onChange = (e, content) => {
-    let group1 = ["categories", "tags", "attributes"],
-      group2 = ["in_stock", "status", "option"];
+    let group1 = ["categories", "tags", "attributes"];
     if (group1.some(val => val === content)) {
+
       let selected = this.state.selected;
       selected[content] = {
         id: e.target.dataset.id,
@@ -102,25 +102,26 @@ class ProductEdit extends React.Component {
       this.setState({
         selected: selected,
       });
-      return;
-    };
 
-    let data = this.state.data;
-    if (group2.some(val => val === content)) {
-      if (content === "option") {
-        for (let attr of data["attributes"]) {
-          attr.id === e.target.dataset.id &&
-            (attr.option = e.target.dataset.value)
-        }
-      } else {
-        data[content] = e.target.dataset.value;
-      }
     } else {
-      data[content] = e.target.value;
+
+      let data = this.state.data;
+      switch (content) {
+        case "option":
+          for (let attr of data["attributes"]) {
+            attr.id === e.target.dataset.id &&
+              (attr.option = e.target.dataset.value)
+          }; break;
+        case "in_stock":
+          data[content] = e.target.dataset.id === "1"; break;
+        default: data[content] = e.target.value;
+      }
+
+      this.setState({
+        data: data,
+      })
+
     }
-    this.setState({
-      data: data,
-    })
   }
 
   addItem = (type) => {
@@ -143,6 +144,12 @@ class ProductEdit extends React.Component {
         ));
       }
     }
+  }
+
+  removeProduct = () => {
+    ca.deleteData({ type: "products", key: this.state.id }, () => {
+      this.props.history.push("/products");
+    });
   }
 
   render() {
@@ -169,7 +176,7 @@ class ProductEdit extends React.Component {
               && this.state.data.categories.map((item, index) => {
                 return (
                   <span
-                    key={index}
+                    key={item.id}
                     className="edit-area__item__tag">
                     {
                       ca.joinWithParent(this.state.categories, item.id)
@@ -235,7 +242,7 @@ class ProductEdit extends React.Component {
           <div className="edit-area__item__tags">
             {
               this.state.data.attributes.map((attr, index) => (
-                <div className="edit-area__item">
+                <div key={attr.id} className="edit-area__item">
                   <span className="edit-area__item__title">{attr.name}：</span>
                   <div className="edit-area__item__input">
                     <TableFilter
@@ -324,7 +331,7 @@ class ProductEdit extends React.Component {
               && this.state.data.tags.map((item, index) => {
                 return (
                   <span
-                    key={index}
+                    key={item.id}
                     className="edit-area__item__tag">
                     {item.name}
                     <span
@@ -376,7 +383,7 @@ class ProductEdit extends React.Component {
               <ControlBox
                 editBtns={[
                   { name: "复制", fn: null },
-                  { name: "移至回收站", fn: this.removeProduct },
+                  { name: "删除", fn: this.removeProduct },
                 ]}
                 updateBtn={{ on: true, fn: this.updateData }} >
                 {status}

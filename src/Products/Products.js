@@ -127,6 +127,10 @@ class Product extends React.Component {
         })
     }
 
+    removeProduct = (id) => {
+        ca.deleteData({ type: "products", key: id }, this.getData);
+    }
+
     render() {
         const tableBody = this.state.data.map(item => {
             return (
@@ -164,7 +168,7 @@ class Product extends React.Component {
                                     </li>
                                     <li className="table__list-item__name__controlor__item">
                                         <span className="delete"
-                                            onClick={() => { this.removeCat(item.id) }}
+                                            onClick={() => { this.removeProduct(item.id) }}
                                         >删除</span>
                                     </li>
                                 </ul>
@@ -193,7 +197,7 @@ class Product extends React.Component {
                     <td>
                         {
                             item.categories.map(item => (
-                                <span className="normal-link sepearate">{
+                                <span key={item.id} className="normal-link sepearate">{
                                     ca.joinWithParent(this.state.categories, item.id)
                                 }</span>
                             ))
@@ -202,7 +206,7 @@ class Product extends React.Component {
                     <td>
                         {
                             item.tags.map(item => (
-                                <span className="normal-link sepearate">{item.name}</span>
+                                <span key={item.id} className="normal-link sepearate">{item.name}</span>
                             ))
                         }
                     </td>
