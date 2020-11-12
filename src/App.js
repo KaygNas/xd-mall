@@ -70,6 +70,7 @@ class App extends React.Component {
                     <Route path="/products/categories/edit/:id"
                         children={(props) => (
                             <CategoryEdit
+                                key={props.match.params.id}
                                 isfolded={this.state.isfolded}
                                 params={props.match.params}
                                 history={props.history} />
@@ -82,6 +83,7 @@ class App extends React.Component {
                     <Route path="/products/tags/edit/:id"
                         children={(props) => (
                             <TagEdit
+                                key={props.match.params.id}
                                 isfolded={this.state.isfolded}
                                 params={props.match.params}
                                 history={props.history} />
@@ -94,6 +96,7 @@ class App extends React.Component {
                     <Route path="/products/attributes/edit/:id"
                         children={(props) => (
                             <AttributeEdit
+                                key={props.match.params.id}
                                 isfolded={this.state.isfolded}
                                 params={props.match.params}
                                 history={props.history} />
@@ -104,6 +107,7 @@ class App extends React.Component {
                         children={(props) => {
                             return (
                                 <ProductEdit
+                                    key={props.match.params.id}
                                     isfolded={this.state.isfolded}
                                     params={props.match.params}
                                     history={props.history}
