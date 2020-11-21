@@ -25,11 +25,6 @@ class AttributeEdit extends React.Component {
 
     }
 
-    componentDidMount = () => {
-        this.getData();
-        console.log("componentDidMount")
-    }
-
     onChange = (e, content) => {
         switch (content) {
             case "title":
@@ -46,7 +41,8 @@ class AttributeEdit extends React.Component {
     }
 
     getData = () => {
-        ca.getItemData({ that: this, type: "attributes" });
+        let emptyItem = { id: "", name: "", options: [] };
+        ca.getItemData({ that: this, type: "attributes", emptyItem: emptyItem });
     }
 
     addItem = () => {
@@ -68,6 +64,7 @@ class AttributeEdit extends React.Component {
     }
 
     render() {
+        this.getData();
         const tableBody = this.state.data.options.map((item, index) => {
             return (
                 <React.Fragment>

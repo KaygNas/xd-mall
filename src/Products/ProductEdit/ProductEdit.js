@@ -21,14 +21,14 @@ class ProductEdit extends React.Component {
         attributes: [],
         categories: [],
         images: [],
-        status: "已发布",
+        status: "已发布", //Queries:status设定为数字,根据数字匹配对应选项更安全?
         order: "",
         regular_price: "",
         sale_price: "",
         in_stock: true,
         limits: 0,
         tags: [],
-        modifiedDate: ca.getLocaleISOTime({ zoneoff: 8 }),
+        modifiedDate: "",
       },
       categories: [],
       attributes: [],
@@ -46,7 +46,6 @@ class ProductEdit extends React.Component {
   }
 
   componentDidMount = () => {
-    this.getData();
     ca.getAllItemsData({
       that: this,
       type: "categories",
@@ -69,9 +68,25 @@ class ProductEdit extends React.Component {
   }
 
   getData = () => {
+    let emptyItem = {
+      id: "",
+      name: "",
+      attributes: [],
+      categories: [],
+      images: [],
+      status: "已发布",
+      order: "",
+      regular_price: "",
+      sale_price: "",
+      in_stock: true,
+      limits: 0,
+      tags: [],
+      modifiedDate: ca.getLocaleISOTime({ zoneoff: 8 }),
+    };
     ca.getItemData({
       that: this,
       type: "products",
+      emptyItem: emptyItem,
     })
   }
 
@@ -138,6 +153,7 @@ class ProductEdit extends React.Component {
   }
 
   render() {
+    this.getData();
     const areaContent = (
       <div className="edit-area__items">
         <div className="edit-area__item">

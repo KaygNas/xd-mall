@@ -25,7 +25,7 @@ class CategoryEdit extends React.Component {
                 children: [],
                 productsCollection: [],
                 order: "",
-                modifiedDate: ca.getLocaleISOTime({ zoneoff: 8 }),
+                modifiedDate: "",
             },
             newItem: "",
             categories: [],
@@ -35,10 +35,6 @@ class CategoryEdit extends React.Component {
                 { name: "分类", col: 2 },
             ],
         }
-    }
-    componentDidMount = () => {
-        this.getData();
-        console.log("componentDidMount")
     }
 
     getCategories = () => {
@@ -97,7 +93,18 @@ class CategoryEdit extends React.Component {
     }
 
     getData = () => {
-        ca.getItemData({ that: this, type: "categories" });
+        let emptyItem = {
+            id: "",
+            name: "",
+            images: [],
+            parent: { id: "", name: "无" },
+            status: "已发布",
+            children: [],
+            productsCollection: [],
+            order: "",
+            modifiedDate: ca.getLocaleISOTime({ zoneoff: 8 }),
+        };
+        ca.getItemData({ that: this, type: "categories", emptyItem: emptyItem });
     }
 
     addItem = () => {
@@ -119,6 +126,7 @@ class CategoryEdit extends React.Component {
     }
 
     render() {
+        this.getData();
         const areaContent = (
             <div className="edit-area__items">
                 <div className="edit-area__item">

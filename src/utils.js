@@ -175,7 +175,6 @@ class Table extends BaseLocalStorage {
     }
 }
 
-//不安全,外部能通过对象访问到BaseLocalStorage的共享方法,但我只想暴露Table的共享方法而已.
 const products = new Table("products"),
     categories = new Table("categories"),
     attributes = new Table("attributes"),
@@ -271,9 +270,15 @@ const updateData = ({ that, type, url }) => {
     });
 }
 
-const getItemData = ({ that, type }) => {
+const getItemData = ({ that, type, emptyItem }) => {
     //获取数据
-    if (that.props.params.id !== "new") {
+    if (that.props.params.id === "new"
+        && that.props.params.id !== that.state.id) {
+        that.setState({
+            id: that.props.params.id,
+            data: emptyItem,
+        })
+    } else if (that.props.params.id !== that.state.id) {
         DATABASE[type].get(that.props.params.id).then(res => {
             console.log("recieve response", res);
             if (res.status.code === 0) {
@@ -345,13 +350,7 @@ const joinWithParent = (categories, id) => {
         }
         return res;
     }
-
-    for (let cate of categories) {
-        let res = helper(cate, id, "")
-        if (res) {
-            return res;
-        }
-    }
+    return categories.reduce((acc, cur) => (acc + helper(cur, id, "")), "");
 }
 
 export const commonAction = {

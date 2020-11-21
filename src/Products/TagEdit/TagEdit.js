@@ -25,11 +25,6 @@ class TagEdit extends React.Component {
         }
     }
 
-    componentDidMount = () => {
-        this.getData();
-        console.log("componentDidMount")
-    }
-
     onChange = (e, content) => {
         switch (content) {
             case "title":
@@ -69,6 +64,7 @@ class TagEdit extends React.Component {
     }
 
     render() {
+        this.getData();
         const tableBody = this.state.data.products.map((item, index) => {
             return (
                 <React.Fragment>

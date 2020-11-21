@@ -1,2 +1,3 @@
 - some alergic action need comfirm box
+- getData/removeItem/updateData these fn may could be reused
 - form check should be performed
