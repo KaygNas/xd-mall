@@ -64,7 +64,7 @@ class Categories extends React.Component {
             { type: "categories", filter: filter },
             (res) => {
                 let data = this.flatArr(res.value);
-                console.log("data=", data, "filter:", filter);
+                // console.log("data=", data, "filter:", filter);
                 this.setState({
                     data: data,
                     curStatus: status,

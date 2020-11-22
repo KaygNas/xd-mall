@@ -12,7 +12,7 @@ class TableFilter extends React.Component {
     }
 
     dropList = (e) => {
-        console.log("droplist", e.target, e.type)
+        // console.log("droplist", e.target, e.type)
         let drop = e.type === "blur" ? false : !this.state.dropList;
         this.setState({
             dropList: drop,
@@ -34,7 +34,7 @@ class TableFilter extends React.Component {
     }
 
     selectItem = (e) => {
-        console.log("selectItem", e, e.target, e.type);
+        // console.log("selectItem", e, e.target, e.type);
         this.props.onChange && this.props.onChange(e);
     }
 

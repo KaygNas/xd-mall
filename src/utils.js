@@ -1,3 +1,5 @@
+import INDEXEDDB from "./indexedDB"
+
 class BaseLocalStorage {
     getTable() {
         let rawData = JSON.parse(this.storage.getItem(this.tableName)) || [];
@@ -137,7 +139,7 @@ class Table extends BaseLocalStorage {
         const filterData = (data, filter) => {
             return data.filter((item) => {
                 for (let key in filter) {
-                    console.log(`filter${key} , item${key}`, filter[key] !== item[key]);
+                    // console.log(`filter${key} , item${key}`, filter[key] !== item[key]);
                     if (Array.isArray(item[key])) {
                         return item[key].some(val => val.id === filter[key].id)
                     } else if (filter[key] !== item[key]) {
@@ -196,7 +198,7 @@ categories.get = function (id, filter) {
     const filterData = (data, filter) => {
         return data.filter((item) => {
             for (let key in filter) {
-                console.log(`filter${key} , item${key}`, filter[key] !== item[key]);
+                // console.log(`filter${key} , item${key}`, filter[key] !== item[key]);
                 if (Array.isArray(item[key])) {
                     return item[key].some(val => val.id === filter[key].id)
                 } else if (filter[key] !== item[key]) {
@@ -215,13 +217,13 @@ categories.get = function (id, filter) {
                     res.value = colChildren("", res.value);
                     if (filter) {
                         res.value = filterData(res.value, filter);
-                        console.log("res after filter", res.value);
+                        // console.log("res after filter", res.value);
                     }
                 } else {
                     let categories = this.getItem("all");
                     res.value.children = colChildren(res.value.id, categories);
                 }
-                console.log("get categories", res);
+                // console.log("get categories", res);
                 resolve(res);
             } else {
                 reject(res);
@@ -263,11 +265,19 @@ const removeItem = ({ that, type, id }) => {
 
 
 //这很不函数式,依赖与外部的状态
-const updateData = ({ that, type, url }) => {
-    let id = that.state.id === "new" ? "" : that.state.id;
-    DATABASE[type].set(id, that.state.data).then(res => {
-        that.props.history.push(url + res.value.id);
-    });
+const updateData = async ({ that, type, url }) => {
+    let id = that.state.id === "new" ? "" : that.state.id
+    const data = that.state.data
+
+    if (id) {
+        await INDEXEDDB[type].put({ id, data })
+    } else {
+        id = await INDEXEDDB[type].add(data)
+    }
+    that.props.history.push(url + id);
+    // DATABASE[type].set(id, that.state.data).then(res => {
+    //     that.props.history.push(url + res.value.id);
+    // });
 }
 
 const getItemData = ({ that, type, emptyItem }) => {
@@ -280,7 +290,7 @@ const getItemData = ({ that, type, emptyItem }) => {
         })
     } else if (that.props.params.id !== that.state.id) {
         DATABASE[type].get(that.props.params.id).then(res => {
-            console.log("recieve response", res);
+            // console.log("recieve response", res);
             if (res.status.code === 0) {
                 that.setState({
                     id: that.props.params.id,
@@ -293,9 +303,9 @@ const getItemData = ({ that, type, emptyItem }) => {
 
 const getAllItemsData = ({ that, type, filter, setData }, callback) => {
     DATABASE[type].get("all", filter).then(res => {
-        console.log("recieve data", res.value);
+        // console.log("recieve data", res.value);
         if (res.status.code === 0) {
-            console.log(res);
+            // console.log(res);
             setData && that.setState({
                 [setData]: res.value,
             })
@@ -306,7 +316,7 @@ const getAllItemsData = ({ that, type, filter, setData }, callback) => {
 
 const deleteData = ({ type, key }, callback) => {
     DATABASE[type].remove(key).then(res => {
-        console.log("recieve response", res);
+        // console.log("recieve response", res);
         if (res.status.code === 0) {
             callback && callback(res);
         }

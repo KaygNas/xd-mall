@@ -15,7 +15,7 @@ class TagEdit extends React.Component {
         super();
         this.state = {
             id: "",
-            data: { id: "", name: "", products: [] },
+            data: { name: "", products: [] },
             newItem: "",
             tableHead: [
                 { name: "图片", col: 1 },
@@ -37,11 +37,11 @@ class TagEdit extends React.Component {
                 break;
             default: ;
         }
-        console.log(e.target.value)
+        // console.log(e.target.value)
     }
 
     getData = () => {
-        let emptyItem = { id: "", name: "", products: [] }
+        let emptyItem = { name: "", products: [] }
         ca.getItemData({ that: this, type: "tags", emptyItem: emptyItem });
     }
 

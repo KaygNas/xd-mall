@@ -76,7 +76,7 @@ class CategoryEdit extends React.Component {
                         name: e.target.dataset.value,
                     };
                 } else {
-                    console.log("can not select self or children")
+                    // console.log("can not select self or children")
                     //TODO:noti that can not select self or children;
                 }
                 break;
@@ -89,7 +89,7 @@ class CategoryEdit extends React.Component {
             default: ;
         }
         this.setState({ data: data });
-        console.log("onChange", e, e.target.dataset.value || e.target.value)
+        // console.log("onChange", e, e.target.dataset.value || e.target.value)
     }
 
     getData = () => {
