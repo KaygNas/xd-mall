@@ -3,6 +3,8 @@ const VERSION = 3
 
 class ObjectStore {
     static indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB
+    static database = null
+
     constructor(objectStoreName) {
         this.objectStoreName = objectStoreName
     }
@@ -32,16 +34,27 @@ class ObjectStore {
 
     async getObjectStore(mode) {
         const objectStoreName = this.objectStoreName
-        const db = await this.open()
+        const db = ObjectStore.database ? ObjectStore.database : await this.open()
         const transaction = db.transaction([objectStoreName], mode)
         const objectStore = transaction.objectStore(objectStoreName)
         return objectStore
     }
 
-    async get(id) {
+    async getAll(keyRange) {
         const objectStore = await this.getObjectStore("readonly")
         const res = await new Promise((resolve, reject) => {
-            const request = objectStore.get(id)
+            const request = objectStore.getAll(keyRange)
+            request.onsuccess = e => resolve(e.target.result)
+            request.onerror = e => reject(e.target.result)
+        })
+        return res;
+    }
+
+    async get(id) {
+        const objectStore = await this.getObjectStore("readonly")
+        id = typeof id === "number" ? id : Number(id)
+        const res = await new Promise((resolve, reject) => {
+            const request = objectStore.get(Number(id))
             request.onsuccess = e => resolve(e.target.result)
             request.onerror = e => reject(e.target.result)
         })
@@ -58,10 +71,10 @@ class ObjectStore {
         return res;
     }
 
-    async put({ data, id }) {
+    async put(data) {
         const objectStore = await this.getObjectStore("readwrite")
         const res = await new Promise((resolve, reject) => {
-            const request = objectStore.put(data, id)
+            const request = objectStore.put(data)
             request.onsuccess = e => resolve(e.target.result)
             request.onerror = e => reject(e.target.result)
         })
@@ -78,6 +91,8 @@ class ObjectStore {
         return res;
     }
 }
+
+console.log("ObjectStore", ObjectStore.prototype, ObjectStore.indexedDB, ObjectStore.database)
 
 const INDEXEDDB = {
     products: new ObjectStore("products"),

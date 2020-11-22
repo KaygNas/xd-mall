@@ -25,7 +25,7 @@ class Tags extends React.Component {
     }
 
     getData = () => {
-        ca.getAllItemsData({ that: this, type: "tags", setData: "data" });
+        ca.getAllItemsData({ that: this, type: "tags", setState: "data" });
     }
 
     removeTag = (key) => {

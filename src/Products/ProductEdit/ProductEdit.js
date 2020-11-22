@@ -59,12 +59,12 @@ class ProductEdit extends React.Component {
     ca.getAllItemsData({
       type: "attributes",
       that: this,
-      setData: "attributes",
+      setState: "attributes",
     })
     ca.getAllItemsData({
       type: "tags",
       that: this,
-      setData: "tags",
+      setState: "tags",
     })
   }
 

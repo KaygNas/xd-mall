@@ -46,8 +46,7 @@ class TagEdit extends React.Component {
     }
 
     getData = () => {
-        let emptyItem = { name: "", products: [] }
-        ca.getItemData({ that: this, type: "tags", emptyItem: emptyItem });
+        ca.getItemData({ that: this, type: "tags" });
     }
 
     addItem = () => {

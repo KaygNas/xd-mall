@@ -48,20 +48,20 @@ class Product extends React.Component {
             that: this,
             type: "categories",
         }, (res) => {
-            res.value.push({ id: "", name: "无" });
+            res.push({ id: "", name: "无" });
             this.setState({
-                categories: res.value,
+                categories: res,
             })
         })
         ca.getAllItemsData({
             type: "attributes",
             that: this,
-            setData: "attributes",
+            setState: "attributes",
         })
         ca.getAllItemsData({
             type: "tags",
             that: this,
-            setData: "tags",
+            setState: "tags",
         })
         this.getData();
     }

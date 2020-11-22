@@ -241,6 +241,8 @@ export const DATABASE = {
     tags: tags,
 }
 
+//TODO:增加错误处理
+
 const addItem = ({ that, type, item }) => {
     let data = that.state.data;
     //拦截相同的选项,首先比较其id,否则则比较其本身 
@@ -265,57 +267,41 @@ const removeItem = ({ that, type, id }) => {
 }
 
 
-//这很不函数式,依赖与外部的状态
+
 const updateData = async ({ that, type, url }) => {
     let id = that.state.id === "new" ? "" : that.state.id
     const data = that.state.data
 
     if (id) {
-        await INDEXEDDB[type].put({ id, data })
+        await INDEXEDDB[type].put(data)
     } else {
         id = await INDEXEDDB[type].add(data)
     }
     that.props.history.push(url + id);
-    // DATABASE[type].set(id, that.state.data).then(res => {
-    //     that.props.history.push(url + res.value.id);
-    // });
 }
 
-const getItemData = ({ that, type }) => {
-    //获取数据
-    if (that.props.params.id !== "new") {
-        DATABASE[type].get(that.props.params.id).then(res => {
-            // console.log("recieve response", res);
-            if (res.status.code === 0) {
-                that.setState({
-                    id: that.props.params.id,
-                    data: res.value,
-                })
-            }
+const getItemData = async ({ that, type }) => {
+    const id = that.props.params.id
+    if (id !== "new") {
+        const res = await INDEXEDDB[type].get(id)
+        that.setState({
+            id: res.id,
+            data: res,
         })
     }
 }
 
-const getAllItemsData = ({ that, type, filter, setData }, callback) => {
-    DATABASE[type].get("all", filter).then(res => {
-        // console.log("recieve data", res.value);
-        if (res.status.code === 0) {
-            // console.log(res);
-            setData && that.setState({
-                [setData]: res.value,
-            })
-            callback && callback(res);
-        }
+const getAllItemsData = async ({ that, type, filter, setState }, callback) => {
+    const res = await INDEXEDDB[type].getAll(filter)
+    setState && that.setState({
+        [setState]: res,
     })
+    callback && callback(res)
 }
 
-const deleteData = ({ type, key }, callback) => {
-    DATABASE[type].remove(key).then(res => {
-        // console.log("recieve response", res);
-        if (res.status.code === 0) {
-            callback && callback(res);
-        }
-    })
+const deleteData = async ({ type, key }, callback) => {
+    const res = await INDEXEDDB[type].delete(key)
+    callback && callback(res)
 }
 
 const getLocaleISOTime = ({ zoneoff }) => {
