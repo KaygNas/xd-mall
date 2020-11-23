@@ -9,13 +9,15 @@ import {
 import ContentTable from "../../components/ContentTable/ContentTable";
 import { commonAction as ca } from "../../utils";
 import { ItemInputer } from "../../components/TableControler/TableControler";
+import { Link } from "react-router-dom"
 
 class TagEdit extends React.Component {
     constructor(props) {
         super();
         this.state = {
             id: "",
-            data: { name: "", products: [] },
+            data: { name: "" },
+            productsCollection: [],
             newItem: "",
             tableHead: [
                 { name: "图片", col: 1 },
@@ -26,8 +28,19 @@ class TagEdit extends React.Component {
     }
 
     componentDidMount = () => {
-        this.getData();
-        console.log("componentDidMount")
+        this.getData()
+        this.getProductsCollection()
+    }
+
+    getProductsCollection = () => {
+        let id = this.props.params.id
+        id = typeof id === 'number' ? id : Number(id)
+        ca.getAllItemsData({
+            type: "products",
+            filter: { tags: id },
+            that: this,
+            setState: "productsCollection",
+        })
     }
 
     onChange = (e, content) => {
@@ -68,36 +81,63 @@ class TagEdit extends React.Component {
     }
 
     render() {
-        const tableBody = this.state.data.products.map((item, index) => {
+        const tableBody = this.state.productsCollection.map((item) => {
             return (
                 <React.Fragment>
-                    {
-                        //TODO:待完成商品页面时更新
-                    }
-                    <td className="valign-middle"><span className="table__list-item__img"></span></td>
+                    <td className="valign-middle">
+                        <span className="table__list-item__img"></span></td>
                     <td>
                         <div className="table__list-item__name">
                             <div className="table__list-item__name__title">
-                                <span className="normal-link">可口可乐</span>
+                                <Link
+                                    to={"/products/edit/" + item.id}
+                                    className="normal-link">{item.name}
+                                </Link>
                             </div>
-                            <div className="product__attr">规格：500mL*24</div>
+                            {
+                                item.attributes.map(attr => {
+                                    return (
+                                        <div key={attr.id} className="table__list-item__name__title product__attr">
+                                            {attr.name}: {attr.option}
+                                        </div>
+                                    )
+                                })
+                            }
                             <div className="table__list-item__name__controlor">
                                 <ul>
                                     <li className="table__list-item__name__controlor__item">
-                                        ID:1234
-                        </li>
-                                    <li className="table__list-item__name__controlor__item">
-                                        <span className="normal-link">编辑</span>
+                                        ID:{item.id}
                                     </li>
                                     <li className="table__list-item__name__controlor__item">
-                                        <span className="delete">移除本项</span>
+                                        <Link
+                                            to={"/products/edit/" + item.id}
+                                            className="normal-link" >
+                                            编辑
+                                                </Link>
+                                    </li>
+                                    <li className="table__list-item__name__controlor__item">
+                                        <span className="normal-link" >快速编辑</span>
+                                    </li>
+                                    <li className="table__list-item__name__controlor__item">
+                                        <span className="delete"
+                                            onClick={() => { this.removeProduct(item.id) }}
+                                        >删除</span>
                                     </li>
                                 </ul>
                             </div>
                         </div>
                     </td>
                     <td>
-                        <span className="normal-link">待更新、可口可乐</span>
+                        {
+                            item.tags.map(item => (
+                                <span key={item.id} className="normal-link sepearate">
+                                    <Link
+                                        to={"/products/tags/edit/" + item.id}>
+                                        {item.name}
+                                    </Link>
+                                </span>
+                            ))
+                        }
                     </td>
                 </React.Fragment>
             )

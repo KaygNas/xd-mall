@@ -16,7 +16,7 @@ class AttributeEdit extends React.Component {
         super();
         this.state = {
             id: "",
-            data: { id: "", name: "", options: [] },
+            data: { name: "", options: [] },
             newItem: "",
             tableHead: [
                 { name: "选项", col: 12 },
@@ -27,7 +27,7 @@ class AttributeEdit extends React.Component {
 
     componentDidMount = () => {
         this.getData();
-        console.log("componentDidMount")
+        //console.log("componentDidMount")
     }
 
     onChange = (e, content) => {

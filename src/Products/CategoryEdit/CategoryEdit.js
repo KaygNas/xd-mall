@@ -10,6 +10,7 @@ import {
 import { TableFilter, ItemInputer } from "../../components/TableControler/TableControler";
 import ContentTable from "../../components/ContentTable/ContentTable";
 import { commonAction as ca } from "../../utils";
+import { Link } from "react-router-dom"
 
 class CategoryEdit extends React.Component {
     constructor(props) {
@@ -17,16 +18,15 @@ class CategoryEdit extends React.Component {
         this.state = {
             id: "",
             data: {
-                id: "",
                 name: "",
                 images: [],
-                parent: { id: "", name: "无" },
+                parent: { id: 0, name: "无" },
                 status: "已发布",
                 children: [],
-                productsCollection: [],
                 order: "",
                 modifiedDate: ca.getLocaleISOTime({ zoneoff: 8 }),
             },
+            productsCollection: [],
             newItem: "",
             categories: [],
             tableHead: [
@@ -37,18 +37,31 @@ class CategoryEdit extends React.Component {
         }
     }
     componentDidMount = () => {
-        this.getData();
-        console.log("componentDidMount")
+        this.getData()
+        this.getCategories()
+        this.getProductsCollection()
+    }
+
+    getProductsCollection = () => {
+        let id = this.props.params.id
+        id = typeof id === 'number' ? id : Number(id)
+        ca.getAllItemsData({
+            type: "products",
+            filter: { categories: id },
+            that: this,
+            setState: "productsCollection",
+        })
     }
 
     getCategories = () => {
         ca.getAllItemsData({
             that: this,
             type: "categories",
+            filter: { parentID: 0 },
         }, (res) => {
-            res.value.push({ id: "", name: "无" });
+            res.push({ id: 0, name: "无" });
             this.setState({
-                categories: res.value,
+                categories: res,
             })
         })
     }
@@ -73,10 +86,11 @@ class CategoryEdit extends React.Component {
                 data.order = e.target.value;
                 break;
             case "parent":
-                if (this.state.id !== e.target.dataset.id
-                    && !this.isChild(e.target.dataset.id)) {
+                const id = Number(e.target.dataset.id)
+                if (this.state.id !== id
+                    && !this.isChild(id)) {
                     data.parent = {
-                        id: e.target.dataset.id,
+                        id: id,
                         name: e.target.dataset.value,
                     };
                 } else {
@@ -177,10 +191,64 @@ class CategoryEdit extends React.Component {
             </React.Fragment>
         )
 
-        const tableBody = this.state.data.productsCollection.map((item, index) => {
+        const tableBody = this.state.productsCollection.map((item) => {
             return (
                 <React.Fragment>
-
+                    <td className="valign-middle">
+                        <span className="table__list-item__img"></span></td>
+                    <td>
+                        <div className="table__list-item__name">
+                            <div className="table__list-item__name__title">
+                                <Link
+                                    to={"/products/edit/" + item.id}
+                                    className="normal-link">{item.name}
+                                </Link>
+                            </div>
+                            {
+                                item.attributes.map(attr => {
+                                    return (
+                                        <div key={attr.id} className="table__list-item__name__title product__attr">
+                                            {attr.name}: {attr.option}
+                                        </div>
+                                    )
+                                })
+                            }
+                            <div className="table__list-item__name__controlor">
+                                <ul>
+                                    <li className="table__list-item__name__controlor__item">
+                                        ID:{item.id}
+                                    </li>
+                                    <li className="table__list-item__name__controlor__item">
+                                        <Link
+                                            to={"/products/edit/" + item.id}
+                                            className="normal-link" >
+                                            编辑
+                                            </Link>
+                                    </li>
+                                    <li className="table__list-item__name__controlor__item">
+                                        <span className="normal-link" >快速编辑</span>
+                                    </li>
+                                    <li className="table__list-item__name__controlor__item">
+                                        <span className="delete"
+                                            onClick={() => { this.removeProduct(item.id) }}
+                                        >删除</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        {
+                            item.categories.map(category => (
+                                <span key={category.id} className="normal-link sepearate">
+                                    <Link
+                                        to={"/products/categories/edit/" + category.id}>
+                                        {ca.joinWithParent(this.state.categories, category.id)}
+                                    </Link>
+                                </span>
+                            ))
+                        }
+                    </td>
                 </React.Fragment>
             )
         });

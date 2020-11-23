@@ -266,14 +266,12 @@ const removeItem = ({ that, type, id }) => {
     })
 }
 
-
-
 const updateData = async ({ that, type, url }) => {
     let id = that.state.id === "new" ? "" : that.state.id
     const data = that.state.data
 
     if (id) {
-        await INDEXEDDB[type].put(data)
+        id = await INDEXEDDB[type].put(data)
     } else {
         id = await INDEXEDDB[type].add(data)
     }

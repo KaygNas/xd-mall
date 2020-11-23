@@ -37,7 +37,7 @@ class Categories extends React.Component {
 
     getData = () => {
         ca.getAllItemsData({ type: "categories" }, (res) => {
-            let data = this.flatArr(res.value),
+            let data = res,
                 headerData = this.state.headerData,
                 status = ca.getAllStatus(data);
             headerData.status = status;
@@ -49,24 +49,22 @@ class Categories extends React.Component {
         });
     }
 
-    flatArr = function flatArr(categories) {
-        let result = [];
-        for (let item of categories) {
-            let temp = flatArr(item.children);
-            result.push(item, ...temp);
-        }
-        return result;
-    }
+    // flatArr = function flatArr(categories) {
+    //     let result = [];
+    //     for (let item of categories) {
+    //         let temp = flatArr(item.children);
+    //         result.push(item, ...temp);
+    //     }
+    //     return result;
+    // }
 
     selectStatus = (status) => {
         let filter = status === "全部" ? {} : { status: status };
         ca.getAllItemsData(
             { type: "categories", filter: filter },
             (res) => {
-                let data = this.flatArr(res.value);
-                // console.log("data=", data, "filter:", filter);
                 this.setState({
-                    data: data,
+                    data: res,
                     curStatus: status,
                 })
             })
@@ -122,13 +120,13 @@ class Categories extends React.Component {
                     </td>
                     <td>
                         <span className="normal-link" >
-                            {item.parent.name}
+                            <Link
+                                to={"/products/categories/edit/" + item.parent.id}>
+                                {item.parent.name}
+                            </Link>
                         </span>
                     </td>
-                    {
-                        //TODO:更新数量统计数据
-                    }
-                    <td>13</td>
+                    <td>{item.productsQuantity}</td>
                     <td>{item.order}</td>
                 </React.Fragment >
             )

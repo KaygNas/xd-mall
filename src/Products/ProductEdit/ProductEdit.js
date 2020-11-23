@@ -16,7 +16,6 @@ class ProductEdit extends React.Component {
     super();
     this.state = {
       data: {
-        id: "",
         name: "",
         attributes: [],
         categories: [],
@@ -50,10 +49,11 @@ class ProductEdit extends React.Component {
     ca.getAllItemsData({
       that: this,
       type: "categories",
+      filter: { parentID: 0 }
     }, (res) => {
-      res.value.push({ id: "", name: "无" });
+      res.push({ id: 0, name: "无" });
       this.setState({
-        categories: res.value,
+        categories: res,
       })
     })
     ca.getAllItemsData({
@@ -76,36 +76,30 @@ class ProductEdit extends React.Component {
   }
 
   onChange = (e, content) => {
-    let group1 = ["categories", "tags", "attributes"];
-    if (group1.some(val => val === content)) {
-
-      let selected = this.state.selected;
+    let selectedGroup = ["categories", "tags", "attributes"];
+    if (selectedGroup.indexOf(content) !== -1) {
+      let selected = this.state.selected
       selected[content] = {
-        id: e.target.dataset.id,
+        id: Number(e.target.dataset.id),
         name: e.target.dataset.value,
       };
       this.setState({
         selected: selected,
       });
-
     } else {
-
-      let data = this.state.data;
+      const data = this.state.data
       switch (content) {
         case "option":
           for (let attr of data["attributes"]) {
-            attr.id === e.target.dataset.id &&
-              (attr.option = e.target.dataset.value)
+            attr.id === Number(e.target.dataset.id) && (attr.option = e.target.dataset.value)
           }; break;
         case "in_stock":
-          data[content] = e.target.dataset.id === "1"; break;
+          data[content] = Number(e.target.dataset.id) === 1; break;
         default: data[content] = e.target.value;
       }
-
       this.setState({
         data: data,
       })
-
     }
   }
 
@@ -122,6 +116,7 @@ class ProductEdit extends React.Component {
   }
 
   getOptions = (id) => {
+    id = typeof id === "number" ? id : Number(id)
     for (let attr of this.state.attributes) {
       if (attr.id === id) {
         return attr.options.map(val => (
@@ -129,6 +124,7 @@ class ProductEdit extends React.Component {
         ));
       }
     }
+    return []
   }
 
   removeProduct = () => {

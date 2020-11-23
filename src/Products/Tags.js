@@ -69,7 +69,7 @@ class Tags extends React.Component {
                             </div>
                         </div>
                     </td>
-                    <td>13</td>
+                    <td>{item.productsQuantity}</td>
                 </React.Fragment >
             )
         });

@@ -45,15 +45,6 @@ class Product extends React.Component {
 
     componentDidMount = () => {
         ca.getAllItemsData({
-            that: this,
-            type: "categories",
-        }, (res) => {
-            res.push({ id: "", name: "无" });
-            this.setState({
-                categories: res,
-            })
-        })
-        ca.getAllItemsData({
             type: "attributes",
             that: this,
             setState: "attributes",
@@ -63,12 +54,13 @@ class Product extends React.Component {
             that: this,
             setState: "tags",
         })
-        this.getData();
+        this.getData()
+        this.getCategories()
     }
 
     getData = () => {
         ca.getAllItemsData({ type: "products" }, (res) => {
-            let data = res.value,
+            let data = res,
                 headerData = this.state.headerData,
                 status = ca.getAllStatus(data);
             headerData.status = status;
@@ -84,10 +76,11 @@ class Product extends React.Component {
         ca.getAllItemsData({
             that: this,
             type: "categories",
+            filter: { parentID: 0 }
         }, (res) => {
-            res.value.push({ id: "", name: "无" });
+            res.push({ id: 0, name: "无" });
             this.setState({
-                categories: res.value,
+                categories: res,
             })
         })
     }
@@ -98,19 +91,19 @@ class Product extends React.Component {
             { type: "products", filter: filter },
             (res) => {
                 this.setState({
-                    data: res.value,
+                    data: res,
                     curStatus: status,
                 })
             })
     }
 
     filterProducts = () => {
-        let filter = { categories: this.state.formData.filter };
+        let filter = { categories: this.state.formData.filter.id };
         ca.getAllItemsData(
             { type: "products", filter: filter },
             (res) => {
                 this.setState({
-                    data: res.value,
+                    data: res,
                 })
             })
     }
@@ -119,7 +112,7 @@ class Product extends React.Component {
         let formData = this.state.formData;
 
         formData[content] = {
-            id: e.target.dataset.id,
+            id: Number(e.target.dataset.id),
             name: e.target.dataset.value,
         };
         this.setState({
@@ -151,6 +144,15 @@ class Product extends React.Component {
                                     className="normal-link">{item.name}
                                 </Link>
                             </div>
+                            {
+                                item.attributes.map(attr => {
+                                    return (
+                                        <div key={attr.id} className="table__list-item__name__title product__attr">
+                                            {attr.name}: {attr.option}
+                                        </div>
+                                    )
+                                })
+                            }
                             <div className="table__list-item__name__controlor">
                                 <ul>
                                     <li className="table__list-item__name__controlor__item">
@@ -197,16 +199,24 @@ class Product extends React.Component {
                     <td>
                         {
                             item.categories.map(item => (
-                                <span key={item.id} className="normal-link sepearate">{
-                                    ca.joinWithParent(this.state.categories, item.id)
-                                }</span>
+                                <span key={item.id} className="normal-link sepearate">
+                                    <Link
+                                        to={"/products/categories/edit/" + item.id}>
+                                        {ca.joinWithParent(this.state.categories, item.id)}
+                                    </Link>
+                                </span>
                             ))
                         }
                     </td>
                     <td>
                         {
                             item.tags.map(item => (
-                                <span key={item.id} className="normal-link sepearate">{item.name}</span>
+                                <span key={item.id} className="normal-link sepearate">
+                                    <Link
+                                        to={"/products/tags/edit/" + item.id}>
+                                        {item.name}
+                                    </Link>
+                                </span>
                             ))
                         }
                     </td>
