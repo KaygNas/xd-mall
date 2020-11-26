@@ -33,14 +33,15 @@ class TagEdit extends React.Component {
     }
 
     getProductsCollection = () => {
-        let id = this.props.params.id
-        id = typeof id === 'number' ? id : Number(id)
-        ca.getAllItemsData({
-            type: "products",
-            filter: { tags: id },
-            that: this,
-            setState: "productsCollection",
-        })
+        let id = Number(this.props.params.id)
+        if (!isNaN(id)) {
+            ca.getAllItemsData({
+                type: "products",
+                filter: { tags: id },
+                that: this,
+                setState: "productsCollection",
+            })
+        }
     }
 
     onChange = (e, content) => {

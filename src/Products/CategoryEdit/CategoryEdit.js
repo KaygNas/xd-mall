@@ -43,14 +43,15 @@ class CategoryEdit extends React.Component {
     }
 
     getProductsCollection = () => {
-        let id = this.props.params.id
-        id = typeof id === 'number' ? id : Number(id)
-        ca.getAllItemsData({
-            type: "products",
-            filter: { categories: id },
-            that: this,
-            setState: "productsCollection",
-        })
+        let id = Number(this.props.params.id)
+        if (!isNaN(id)) {
+            ca.getAllItemsData({
+                type: "products",
+                filter: { categories: id },
+                that: this,
+                setState: "productsCollection",
+            })
+        }
     }
 
     getCategories = () => {

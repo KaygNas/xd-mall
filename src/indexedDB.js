@@ -128,23 +128,14 @@ class ObjectStore {
     }
 }
 
-const categories = new ObjectStore("categories")
-const getAllCategories = ObjectStore.prototype.getAll.bind(categories)
-const formateCategoriesDetail = async function (categories) {
-    for (let category of categories) {
-        category.children = await getAllCategories({ parentID: category.id })
-        category.productsQuantity = await products.count({ categories: category.id })
-    }
-    return categories
-}
 
-categories.getAll = async function (filter) {
-    let res = await getAllCategories(filter)
-    res = await formateCategoriesDetail(res)
-    return res
-}
+
 
 const products = new ObjectStore("products")
+const addProduct = ObjectStore.prototype.add.bind(products)
+const putProduct = ObjectStore.prototype.put.bind(products)
+const getProduct = ObjectStore.prototype.get.bind(products)
+const getAllProducts = ObjectStore.prototype.getAll.bind(products)
 const flatArrsWithId = function (data) {
     const properties = ["categories", "tags"]
     const newData = Object.assign({}, data)
@@ -153,6 +144,7 @@ const flatArrsWithId = function (data) {
     }
     return newData
 }
+
 const formateProductDetail = async function (product) {
     const properties = ["categories", "tags"]
     for (let property of properties) {
@@ -163,10 +155,6 @@ const formateProductDetail = async function (product) {
     }
     return product
 }
-const addProduct = ObjectStore.prototype.add.bind(products)
-const putProduct = ObjectStore.prototype.put.bind(products)
-const getProduct = ObjectStore.prototype.get.bind(products)
-const getAllProducts = ObjectStore.prototype.getAll.bind(products)
 
 products.add = async function (data) {
     const newData = flatArrsWithId(data)
@@ -192,8 +180,40 @@ products.getAll = async function (filter) {
     return res
 }
 
+const deleteProductsRelativeProperty = async function (filter) {
+    const items = await products.getAll(filter)
+    items.forEach(item => {
+        const type = filter && Object.keys(filter)[0]
+        const id = filter && filter[type]
+        const index = item[type].findIndex(value => value.id === id)
+        item[type].splice(index, 1)
+        products.put(item)
+    })
+}
+
+const categories = new ObjectStore("categories")
+const getAllCategories = ObjectStore.prototype.getAll.bind(categories)
+const deleteCategory = ObjectStore.prototype.delete.bind(categories)
+const formateCategoriesDetail = async function (categories) {
+    for (let category of categories) {
+        category.children = await getAllCategories({ parentID: category.id })
+        category.productsQuantity = await products.count({ categories: category.id })
+    }
+    return categories
+}
+categories.getAll = async function (filter) {
+    let res = await getAllCategories(filter)
+    res = await formateCategoriesDetail(res)
+    return res
+}
+categories.delete = async function (id) {
+    await deleteProductsRelativeProperty({ categories: id })
+    return await deleteCategory(id)
+}
+
 const tags = new ObjectStore("tags")
 const getAllTags = ObjectStore.prototype.getAll.bind(tags)
+const deleteTags = ObjectStore.prototype.delete.bind(tags)
 const formateTagsDetail = async function (tags) {
     for (let tag of tags) {
         tag.productsQuantity = await products.count({ tags: tag.id })
@@ -204,6 +224,10 @@ tags.getAll = async function () {
     let res = await getAllTags()
     res = await formateTagsDetail(res)
     return res
+}
+tags.delete = async function (id) {
+    await deleteProductsRelativeProperty({ tags: id })
+    return await deleteTags(id)
 }
 
 
