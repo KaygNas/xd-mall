@@ -1,7 +1,8 @@
 import React from "react";
+import { TableFilter } from "../TableControler/TableControler"
 import "./ContentEdit.scss";
 
-function ContentEdit(props) {
+export function ContentEdit(props) {
     return (
         <div className="edit-wraper">
             <div className="edit-area col-9">
@@ -14,7 +15,7 @@ function ContentEdit(props) {
     )
 }
 
-function EditArea(props) {
+export function EditArea(props) {
     return (
         <React.Fragment>
             <input
@@ -30,7 +31,7 @@ function EditArea(props) {
     )
 }
 
-function ControlBox(props) {
+export function ControlBox(props) {
     return (
         <div className="control-box">
             <div className="control-box__title">{props.title || "操作"}</div>
@@ -61,7 +62,7 @@ function ControlBox(props) {
     )
 }
 
-function ImgUpdater(props) {
+export function ImgUpdater(props) {
     return (
         <ControlBox
             title={props.title}
@@ -73,5 +74,28 @@ function ImgUpdater(props) {
     )
 }
 
-
-export { ContentEdit, EditArea, ControlBox, ImgUpdater };
+export function StatusControler({ status, modifiedDate, onChange }) {
+    return (
+        <React.Fragment>
+            {
+                //TODO:创建新Item时默认状态为已发布,按钮文字改为"发布"
+            }
+            <div className="product-status__item">
+                <span className="product-status__item__title">状态:</span>
+                <TableFilter
+                    list={[{ name: "待发布", children: null }, { name: "已发布", children: null }]}
+                    value={status}
+                    onChange={onChange.status}
+                ></TableFilter>
+            </div>
+            <div className="product-status__item">
+                <span className="product-status__item__title">发布于:</span>
+                <input
+                    type="datetime-local"
+                    value={modifiedDate}
+                    onChange={onChange.modifiedDate}
+                ></input>
+            </div>
+        </React.Fragment >
+    )
+}

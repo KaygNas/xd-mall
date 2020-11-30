@@ -1,2 +1,0 @@
-- some alergic action need comfirm box
-- form check should be performed

@@ -12,8 +12,7 @@ class ObjectStore {
     upgrade(request) {
         const db = request.result
         const objectStoreNames = ["products", "categories", "attributes", "tags"]
-        const notInDB = objectStoreNames
-            .some(name => !db.objectStoreNames.contains(name))
+        const notInDB = objectStoreNames.some(name => !db.objectStoreNames.contains(name))
         let objectStores = {}
         if (notInDB) {
             objectStoreNames.forEach(name => db.deleteObjectStore(name))
