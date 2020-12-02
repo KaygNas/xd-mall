@@ -38,6 +38,7 @@ export default function Product({ isfolded }) {
 
     useEffect(() => {
         getData()
+        getCategories()
     }, [])
 
     const getData = (filter, callback) => {

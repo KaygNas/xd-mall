@@ -11,7 +11,9 @@ import {
 import { TableFilter, ItemInputer } from "../../components/TableControler/TableControler";
 import ContentTable from "../../components/ContentTable/ContentTable";
 import { commonAction as ca } from "../../utils/utils";
+import { useProductCollection } from "../../utils/myHooks"
 import { Link } from "react-router-dom"
+import * as _ from "lodash"
 
 const tableHead = [
     { name: "图片", col: 1 },
@@ -20,6 +22,7 @@ const tableHead = [
 ]
 
 export default function CategoryEdit({ isfolded, params, history }) {
+    const id = Number(params.id)
     const [data, setData] = useState({
         name: "",
         images: [],
@@ -29,22 +32,19 @@ export default function CategoryEdit({ isfolded, params, history }) {
         order: "",
         modifiedDate: ca.getLocaleISOTime({ zoneoff: 8 }),
     })
-    const [productsCollection, setProductsCollection] = useState([])
-    const [newItem, setNewItem] = useState("")
+    const [newItem, setNewItem] = useState({ label: "", data: null })
+    const [listItems, setListItems] = useState([])
     const [categories, SetCategories] = useState([])
-    const id = Number(params.id)
+    const [
+        productsCollection,
+        setProductsCollection,
+        diffUpdateProductsCollection,
+    ] = useProductCollection({ property: "categories", propertyID: id })
 
     useEffect(() => {
-        getData()
+        ca.getItemData({ type: "categories", id }, setData)
         getCategories()
-        getProductsCollection()
     }, [])
-
-    const getProductsCollection = () => {
-        if (!isNaN(id)) {
-            ca.getAllItemsData({ type: "products", filter: { categories: id } }, setProductsCollection)
-        }
-    }
 
     const getCategories = () => {
         ca.getAllItemsData({
@@ -66,7 +66,9 @@ export default function CategoryEdit({ isfolded, params, history }) {
         const newData = { ...data }
         switch (content) {
             case "newItem":
-                setNewItem(e.target.value); return;
+                setNewItem({ label: e.target.value, data: null })
+                getListItems(e.target.value)
+                return
             case "title":
                 newData.name = e.target.value; break;
             case "order":
@@ -92,19 +94,37 @@ export default function CategoryEdit({ isfolded, params, history }) {
         setData(newData)
     }
 
-    const getData = () => {
-        ca.getItemData({ type: "categories", id }, setData);
+    const getListItems = _.debounce(async (input) => {
+        const listItems = await ca.searchItemsData({ type: "products", keywords: input })
+        setListItems(listItems)
+    }, 200)
+
+    const setItem = (e) => {
+        const id = Number(e.target.dataset.id)
+        const item = listItems.find(val => val.id === id)
+        const product = ca.insertProductProperty({ property: "categories", propertyData: { id: data.id, name: data.name }, product: item })
+        setNewItem({ label: e.target.dataset.value, data: product })
     }
 
-    const addItem = () => {
+    const resetItem = (e) => {
+        setNewItem({ label: "", data: null })
     }
 
-    const removeItem = (index) => {
+    const addItem = (e) => {
+        ca.addItem({ items: productsCollection, item: newItem.data }, newItems => {
+            setProductsCollection(newItems)
+        });
+    }
+
+    const removeItem = (id) => {
+        const index = productsCollection.findIndex(item => item.id === id)
+        ca.removeItem({ items: productsCollection, index: index }, setProductsCollection)
     }
 
     const updateData = () => {
         ca.updateData({ type: "categories", id, data, }, (res) => {
-            history.push("/products/categories/edit/" + res);
+            history.push("/products/categories/edit/" + res)
+            diffUpdateProductsCollection()
         })
     }
 
@@ -225,11 +245,13 @@ export default function CategoryEdit({ isfolded, params, history }) {
                             tableHead={tableHead}
                             tableBody={tableBody}
                             tableNav={
-                                //TODO:待更新,应该是带自动检索的输入框
                                 <ItemInputer
                                     placeholder="输入新项目"
-                                    value={newItem}
+                                    value={newItem.label}
                                     onChange={(e) => onChange(e, "newItem")}
+                                    onClick={setItem}
+                                    onClear={resetItem}
+                                    listItems={listItems}
                                     button={{ name: "添加新项目", fn: addItem }}
                                 />
                             }

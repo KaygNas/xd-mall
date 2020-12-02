@@ -85,11 +85,17 @@ export default function ProductEdit({ isfolded, params, history }) {
   }
 
   const addItem = (type) => {
-    ca.addItem({ type: type, item: selected[type], data }, setData);
+    ca.addItem({ item: selected[type], items: data[type] }, newItems => {
+      const newData = { ...data, [type]: newItems }
+      setData(newData)
+    })
   }
 
   const removeItem = (type, index) => {
-    ca.removeItem({ type: type, id: index, data }, setData);
+    ca.removeItem({ index, items: data[type] }, newItems => {
+      const newData = { ...data, [type]: newItems }
+      setData(newData)
+    })
   }
 
   const updateData = () => {
@@ -281,9 +287,6 @@ export default function ProductEdit({ isfolded, params, history }) {
               value={selected.tags.name}
               onChange={(e) => { onChange(e, "tags") }}
             ></TableFilter>
-            {
-              //TODO:此处应为自动搜索匹配的输入框
-            }
           </div>
         </div>
 

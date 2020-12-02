@@ -10,6 +10,8 @@ import ContentTable from "../../components/ContentTable/ContentTable";
 import { commonAction as ca } from "../../utils/utils";
 import { ItemInputer } from "../../components/TableControler/TableControler";
 import { Link } from "react-router-dom"
+import * as _ from "lodash"
+import { useProductCollection } from "../../utils/myHooks"
 
 const tableHead = [
     { name: "图片", col: 1 },
@@ -18,28 +20,19 @@ const tableHead = [
 ]
 
 export default function TagEdit({ isfolded, params, history }) {
-    const [data, setData] = useState({ name: "" })
-    const [productsCollection, setProductsCollection] = useState([])
-    const [newItem, setNewItem] = useState("")
     const id = Number(params.id)
+    const [data, setData] = useState({ name: "" })
+    const [newItem, setNewItem] = useState({ label: "", data: null })
+    const [listItems, setListItems] = useState([])
+    const [
+        productsCollection,
+        setProductsCollection,
+        diffUpdateProductsCollection,
+    ] = useProductCollection({ property: "tags", propertyID: id })
 
     useEffect(() => {
-        getData()
-        getProductsCollection()
+        ca.getItemData({ type: "tags", id }, setData)
     }, [])
-
-    const getData = () => {
-        ca.getItemData({ type: "tags", id }, setData);
-    }
-
-    const getProductsCollection = () => {
-        if (!isNaN(id)) {
-            ca.getAllItemsData({
-                type: "products",
-                filter: { tags: id },
-            }, setProductsCollection)
-        }
-    }
 
     const onChange = (e, content) => {
         switch (content) {
@@ -47,29 +40,44 @@ export default function TagEdit({ isfolded, params, history }) {
                 setData({ ...data, name: e.target.value })
                 break
             case "newItem":
-                setNewItem(e.target.value)
+                setNewItem({ label: e.target.value, data: null })
+                getListItems(e.target.value)
                 break
             default: ;
         }
     }
 
-    const addItem = () => {
-        //!未完成功能
-        ca.addItem({ type: "products", item: newItem, data }, (res) => {
-            setData(res)
+    const getListItems = _.debounce(async (input) => {
+        const listItems = await ca.searchItemsData({ type: "products", keywords: input })
+        setListItems(listItems)
+    }, 200)
+
+    const setItem = (e) => {
+        const id = Number(e.target.dataset.id)
+        const item = listItems.find(val => val.id === id)
+        const product = ca.insertProductProperty({ property: "tags", propertyData: { id: data.id, name: data.name }, product: item })
+        setNewItem({ label: e.target.dataset.value, data: product })
+    }
+
+    const resetItem = (e) => {
+        setNewItem({ label: "", data: null })
+    }
+
+    const addItem = (e) => {
+        ca.addItem({ items: productsCollection, item: newItem.data }, newItems => {
+            setProductsCollection(newItems)
         });
     }
 
     const removeItem = (id) => {
-        //!未完成功能
-        ca.removeItem({ type: "products", id: id, data }, (res) => {
-            setData(res)
-        })
+        const index = productsCollection.findIndex(item => item.id === id)
+        ca.removeItem({ items: productsCollection, index: index }, setProductsCollection)
     }
 
     const updateData = () => {
-        ca.updateData({ type: "tags", id, data, }, (res) => {
-            history.push("/products/tags/edit/" + res);
+        ca.updateData({ type: "tags", id, data, }, async (res) => {
+            history.push("/products/tags/edit/" + res)
+            diffUpdateProductsCollection()
         })
     }
 
@@ -119,7 +127,7 @@ export default function TagEdit({ isfolded, params, history }) {
                                 <li className="table__list-item__name__controlor__item">
                                     <span className="delete"
                                         onClick={() => { removeItem(item.id) }}
-                                    >删除</span>
+                                    >移除项目</span>
                                 </li>
                             </ul>
                         </div>
@@ -154,11 +162,13 @@ export default function TagEdit({ isfolded, params, history }) {
                             tableHead={tableHead}
                             tableBody={tableBody}
                             tableNav={
-                                //TODO:待更新,应该是带自动检索的输入框
                                 <ItemInputer
                                     placeholder="输入新项目"
-                                    value={newItem}
+                                    value={newItem.label}
                                     onChange={(e) => onChange(e, "newItem")}
+                                    onClick={setItem}
+                                    onClear={resetItem}
+                                    listItems={listItems}
                                     button={{ name: "添加新项目", fn: addItem }}
                                 />
                             }

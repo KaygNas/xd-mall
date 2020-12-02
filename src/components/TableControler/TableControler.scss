@@ -1,11 +1,11 @@
 @import "../common.scss";
 .table-filter-wraper {
   display: inline-block;
+  font-size: 15px;
 }
-.table-filter {
+.table-filter,.table-inputer {
   display: inline-block;
   position: relative;
-  font-size: 15px;
 }
 
 .table-filter::after {
@@ -17,6 +17,15 @@
   border-style: solid;
   border-width: 7px 5px 0 5px;
   border-color: $deep-grey-2 transparent transparent transparent;
+}
+
+.table-inputer__clear-input-btn{
+  position: absolute;
+  display: block;
+  top: 7px;
+  right: 7px;
+  background-color: transparent;
+  border: none;
 }
 
 .table-filter:focus {
@@ -69,3 +78,4 @@
 .table-filter__btn {
   margin-left: 6px;
 }
+

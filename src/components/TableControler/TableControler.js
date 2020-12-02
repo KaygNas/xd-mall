@@ -1,7 +1,65 @@
-import React from "react";
+import React, { useState } from "react";
 import "./TableControler.scss";
 
-class TableFilter extends React.Component {
+function List({ visible, listItems, children, onClick, onMouseEnter, className = "", style }) {
+    const showArrow = (item) => {
+        if (item.children instanceof Array && item.children.length > 0) {
+            return <span className="table-filter__drop-down__arrow"></span>
+        }
+        return null
+    }
+
+    return (
+        <ul className={"table-filter__drop-down " + className}
+            style={{
+                ...style,
+                opacity: visible ? "1" : "0",
+                visibility: visible ? "visible" : "hidden"
+            }}
+            onMouseDown={(e) => { e.preventDefault() }}
+            onClick={onClick}
+        >
+            {
+                listItems && listItems.map((item, index) => {
+                    return (
+                        <li
+                            key={index}
+                            className="table-filter__drop-down__item"
+                            data-index={index}
+                            data-id={item.id}
+                            data-value={item.name}
+                            onMouseEnter={onMouseEnter}
+                        >
+                            {
+                                // 用 label 和 name 来区分展示的名字与数据
+                            }
+                            {item.name}
+                            {showArrow(item)}
+                        </li>
+                    )
+                })
+            }
+            {children}
+        </ul>
+    )
+}
+
+function AutoButton({ button }) {
+    if (!button) {
+        return null
+    }
+    return (
+        button &&
+        <button
+            className="table-filter__btn btn-2"
+            onClick={button.fn}
+        >
+            {button.name}
+        </button>
+    )
+}
+
+export class TableFilter extends React.Component {
     constructor(props) {
         super();
         this.state = {
@@ -64,94 +122,76 @@ class TableFilter extends React.Component {
                         value={this.props.value}
                     ></input>
 
-                    <ul className="table-filter__drop-down"
-                        style={(this.state.dropList ? { opacity: "1" } : null)}
-                        onMouseDown={(e) => { e.preventDefault() }}
+                    <List
+                        visible={this.state.dropList}
                         onClick={this.selectItem}
+                        onMouseEnter={this.setCurSubList}
+                        listItems={this.props.list}
                     >
-                        {
-                            this.state.dropList && this.props.list.map((item, index) => {
-                                return (
-                                    <li
-                                        key={index}
-                                        className="table-filter__drop-down__item"
-                                        data-index={index}
-                                        data-id={item.id}
-                                        data-value={item.name}
-                                        onMouseEnter={this.setCurSubList}
-                                    >
-                                        {item.name}
-                                        {
-                                            (item.children instanceof Array
-                                                && item.children.length > 0)
-                                            && (<span className="table-filter__drop-down__arrow"></span>)
-                                        }
-                                    </li>
-                                )
-                            })
-                        }
-                        <ul
-                            className="table-filter__drop-down sub-list"
+                        <List
+                            className="sub-list"
+                            visible={this.state.curSubList}
+                            listItems={this.state.curSubList}
                             style={this.state.subListPos}
-                        >
-                            {
-                                this.state.curSubList &&
-                                this.state.curSubList.map((item, index) => {
-                                    return (
-                                        <li
-                                            key={index}
-                                            className="table-filter__drop-down__item"
-                                            data-id={item.id}
-                                            data-value={item.name}
-                                        >
-                                            {item.name}
-                                        </li>
-                                    )
-                                })
-                            }
-                        </ul>
-                    </ul>
+                        ></List>
+                    </List>
                 </div>
 
-                {
-                    this.props.button &&
-                    <button
-                        className="table-filter__btn btn-2"
-                        onClick={this.props.button.fn}
-                    >{this.props.button.name}</button>
-                }
+                <AutoButton button={this.props.button}></AutoButton>
             </div>
         )
     }
 }
 
-class ItemInputer extends React.Component {
-    constructor() {
-        super();
-        this.state = {
-
-        }
+export function ItemInputer({ value, placeholder, listItems, onChange, onClick, onClear, button }) {
+    const [isSelected, setIsSelected] = useState(false)
+    const selectItem = (event) => {
+        setIsSelected(true)
+        onClick(event)
     }
-    render() {
-        return (
-            <div className="table-filter-wraper">
+    const removeSelectedItem = (event) => {
+        setIsSelected(false)
+        onClear(event)
+    }
+
+    return (
+        <div className="table-filter-wraper">
+            <div className="table-inputer">
                 <input
                     className="table-filter__input"
-                    placeholder={this.props.placeholder}
-                    value={this.props.value}
-                    onChange={this.props.onChange}
-                    onClick={this.props.onClick}
+                    readOnly={isSelected}
+                    placeholder={placeholder}
+                    value={value}
+                    onChange={onChange}
                 ></input>
-                {
-                    this.props.button &&
-                    <button
-                        className="table-filter__btn btn-2"
-                        onClick={this.props.button.fn}
-                    >{this.props.button.name}</button>
-                }
-            </div>
-        )
-    }
-}
 
-export { TableFilter, ItemInputer };
+                {
+                    (value || isSelected)
+                    && <button className="table-inputer__clear-input-btn" type="button" onClick={removeSelectedItem}>x</button>
+                }
+                <List
+                    visible={value && !isSelected}
+                    onClick={selectItem}
+                >
+                    {
+                        listItems && listItems.map((item, index) => {
+                            const label = `${item.name} (#${item.id})`
+                            return (
+                                <li
+                                    key={index}
+                                    className="table-filter__drop-down__item"
+                                    data-index={index}
+                                    data-id={item.id}
+                                    data-value={label}
+                                >
+                                    {label}
+                                </li>
+                            )
+                        })
+                    }
+                </List>
+            </div>
+            <AutoButton button={button}></AutoButton>
+        </div>
+    )
+}

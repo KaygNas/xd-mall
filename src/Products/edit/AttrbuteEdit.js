@@ -16,7 +16,7 @@ const tableHead = [
 
 export default function AttributeEdit({ isfolded, params, history }) {
     const [data, setData] = useState({ name: "", options: [] })
-    const [newItem, setNewItem] = useState("")
+    const [newItem, setNewItem] = useState({ label: "", data: null })
     const id = Number(params.id)
 
     useEffect(() => {
@@ -29,7 +29,7 @@ export default function AttributeEdit({ isfolded, params, history }) {
                 setData({ ...data, name: e.target.value });
                 break;
             case "newItem":
-                setNewItem(e.target.value);
+                setNewItem({ label: e.target.value, data: e.target.value })
                 break;
             default: ;
         }
@@ -39,12 +39,22 @@ export default function AttributeEdit({ isfolded, params, history }) {
         ca.getItemData({ type: "attributes", id }, setData);
     }
 
+    const resetItem = (e) => {
+        setNewItem({ label: "", data: null })
+    }
+
     const addItem = () => {
-        ca.addItem({ type: "options", item: newItem, data }, setData);
+        ca.addItem({ items: data.options, item: newItem.data }, newItems => {
+            const newData = { ...data, options: newItems }
+            setData(newData)
+        })
     }
 
     const removeItem = (id) => {
-        ca.removeItem({ type: "options", id: id, data }, setData)
+        ca.removeItem({ items: data.options, index: id }, newItems => {
+            const newData = { ...data, options: newItems }
+            setData(newData)
+        })
     }
 
     const updateData = () => {
@@ -98,11 +108,11 @@ export default function AttributeEdit({ isfolded, params, history }) {
                             tableHead={tableHead}
                             tableBody={tableBody}
                             tableNav={
-                                //TODO:待更新,应该是带自动检索的输入框
                                 <ItemInputer
                                     placeholder="输入新项目"
-                                    value={newItem}
+                                    value={newItem.label}
                                     onChange={(e) => onChange(e, "newItem")}
+                                    onClear={resetItem}
                                     button={{ name: "添加新项目", fn: addItem }}
                                 />
                             }

@@ -125,6 +125,32 @@ class ObjectStore {
         })
         return res;
     }
+
+    async search(keywords) {
+        const objectStore = await this.getObjectStore("readonly")
+        const res = []
+        const collectResult = (result) => {
+            if (result.name.indexOf(keywords) !== -1) {
+                res.push(result)
+            }
+        }
+        await new Promise((resolve, reject) => {
+            const request = objectStore.openCursor()
+            request.onsuccess = e => {
+                let cursor = e.target.result
+                if (cursor) {
+                    collectResult(cursor.value)
+                    cursor.continue()
+                } else {
+                    resolve('map Done')
+                }
+            }
+
+            request.onerror = e => reject(e.target.result)
+        })
+
+        return res
+    }
 }
 
 
@@ -135,6 +161,7 @@ const addProduct = ObjectStore.prototype.add.bind(products)
 const putProduct = ObjectStore.prototype.put.bind(products)
 const getProduct = ObjectStore.prototype.get.bind(products)
 const getAllProducts = ObjectStore.prototype.getAll.bind(products)
+const searchProducts = ObjectStore.prototype.search.bind(products)
 const flatArrsWithId = function (data) {
     const properties = ["categories", "tags"]
     const newData = Object.assign({}, data)
@@ -178,6 +205,15 @@ products.getAll = async function (filter) {
     }
     return res
 }
+
+products.search = async function (keywords) {
+    let res = await searchProducts(keywords)
+    for (let i in res) {
+        res[i] = await formateProductDetail(res[i])
+    }
+    return res
+}
+
 
 const deleteProductsRelativeProperty = async function (filter) {
     const items = await products.getAll(filter)
