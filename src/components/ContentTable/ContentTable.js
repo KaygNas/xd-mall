@@ -1,21 +1,16 @@
-import PageTurner from "../PageTurner/PageTurner";
 import "./ContentTable.scss";
 
-function ContentTable(props) {
+export default function ContentTable({ pages, tableNav, tableHead, tableBody }) {
     return (
         <div>
-            <div className="table-nav">
-                {props.tableNav}
-                <PageTurner
-                    curPage="1"
-                    totalPage="233"
-                ></PageTurner>
-            </div>
+            <TableNav pages={pages}>
+                {tableNav}
+            </TableNav>
             <table className="table">
                 <thead className="table__head">
                     <tr>
                         {
-                            props.tableHead && props.tableHead.map((item, index) => {
+                            tableHead && tableHead.map((item, index) => {
                                 return (
                                     <th key={index}
                                         className={"col-" + item.col}>
@@ -28,7 +23,7 @@ function ContentTable(props) {
                 </thead>
                 <tbody className="table__body">
                     {
-                        props.tableBody && props.tableBody.map((item, index) => {
+                        tableBody && tableBody.map((item, index) => {
                             return (
                                 <tr
                                     key={index}
@@ -42,7 +37,7 @@ function ContentTable(props) {
                 <tfoot className="table__tfoot">
                     <tr>
                         {
-                            props.tableHead && props.tableHead.map((item, index) => {
+                            tableHead && tableHead.map((item, index) => {
                                 return (
                                     <th
                                         key={index}
@@ -55,16 +50,39 @@ function ContentTable(props) {
                     </tr>
                 </tfoot>
             </table>
-            <div className="table-nav">
-                {props.tableNav}
-                <PageTurner
-                    curPage="1"
-                    totalPage="233"
-                ></PageTurner>
-            </div>
-
+            <TableNav >
+                {tableNav}
+            </TableNav>
         </div >
     )
 }
 
-export default ContentTable;
+function TableNav({ children, pages = {} }) {
+    return (
+        <div className="table-nav">
+            {children}
+            <PageTurner
+                curPage={pages.curPage}
+                totalPages={pages.totalPages}
+            ></PageTurner>
+        </div>
+    )
+}
+
+function PageTurner({ curPage, totalPages }) {
+    return (
+        <div className="turner">
+            <button className="turner__btn btn-2">«</button>
+            <button className="turner__btn  btn-2">‹</button>
+            <div className="turner__indicator">
+                第<input className="turner__indicator__input"
+                    value={curPage}
+                    readOnly={true}
+                ></input>页，共{totalPages}页
+            </div>
+            <button className="turner__btn btn-2">›</button>
+            <button className="turner__btn btn-2">»</button>
+        </div >
+    )
+}
+

@@ -49,7 +49,7 @@ export default function CategoryEdit({ isfolded, params, history }) {
     const getCategories = () => {
         ca.getAllItemsData({
             type: "categories",
-            filter: { parentID: 0 },
+            options: { index: "parentID", key: 0 },
         }, (res) => {
             res.push({ id: 0, name: "无" })
             SetCategories(res)

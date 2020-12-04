@@ -57,17 +57,43 @@ class ObjectStore {
         return objectStore
     }
 
-    async getAll(filter) {
+    async getAll(options = {}) {
+        // 为 page 指定默认值
+        options.page = options.page || 1
+        options.perPage = options.perPage || 3
         const objectStore = await this.getObjectStore("readonly")
-        const index = filter && Object.keys(filter)[0]
-        const key = filter && filter[index]
-        const keyRange = key && IDBKeyRange.only(key)
-        const objecStoreIndex = index ? objectStore.index(index) : objectStore
-        const res = await new Promise((resolve, reject) => {
-            const request = objecStoreIndex.getAll(keyRange)
-            request.onsuccess = e => resolve(e.target.result)
+        const keyRange = options.key && IDBKeyRange.only(options.key)
+        const objecStoreIndex = options.index ? objectStore.index(options.index) : objectStore
+
+        const res = []
+        await new Promise((resolve, reject) => {
+            const request = objecStoreIndex.openCursor(keyRange)
+            let skipItems = (options.page - 1) * options.perPage
+            let getResults = (cursor) => {
+                if (skipItems) {
+                    cursor.advance(skipItems)
+                    skipItems = 0
+                    return
+                }
+                // 惰性修改 getResults 函数, 减少分支判断
+                getResults = cursor => {
+                    if (cursor && res.length < options.perPage) {
+                        res.push(cursor.value)
+                        cursor.continue()
+                    } else {
+                        resolve('map Done')
+                    }
+                }
+                getResults(cursor)
+            }
+
+            request.onsuccess = e => {
+                let cursor = e.target.result
+                getResults(cursor)
+            }
             request.onerror = e => reject(e.target.result)
         })
+
         return res;
     }
 
@@ -112,12 +138,10 @@ class ObjectStore {
         return res;
     }
 
-    async count(filter) {
+    async count(options = {}) {
         const objectStore = await this.getObjectStore("readonly")
-        const index = filter && Object.keys(filter)[0]
-        const key = filter && filter[index]
-        const keyRange = key && IDBKeyRange.only(key)
-        const objecStoreIndex = index ? objectStore.index(index) : objectStore
+        const keyRange = options.key && IDBKeyRange.only(options.key)
+        const objecStoreIndex = options.index ? objectStore.index(options.index) : objectStore
         const res = await new Promise((resolve, reject) => {
             const request = objecStoreIndex.count(keyRange)
             request.onsuccess = e => resolve(e.target.result)
@@ -198,8 +222,8 @@ products.get = async function (id) {
     return res
 }
 
-products.getAll = async function (filter) {
-    let res = await getAllProducts(filter)
+products.getAll = async function (options) {
+    let res = await getAllProducts(options)
     for (let i in res) {
         res[i] = await formateProductDetail(res[i])
     }
@@ -215,11 +239,11 @@ products.search = async function (keywords) {
 }
 
 
-const deleteProductsRelativeProperty = async function (filter) {
-    const items = await products.getAll(filter)
+const deleteProductsRelativeProperty = async function (options) {
+    const items = await products.getAll(options)
     items.forEach(item => {
-        const type = filter && Object.keys(filter)[0]
-        const id = filter && filter[type]
+        const type = options.type
+        const id = options.id
         const index = item[type].findIndex(value => value.id === id)
         item[type].splice(index, 1)
         products.put(item)
@@ -231,13 +255,13 @@ const getAllCategories = ObjectStore.prototype.getAll.bind(categories)
 const deleteCategory = ObjectStore.prototype.delete.bind(categories)
 const formateCategoriesDetail = async function (categories) {
     for (let category of categories) {
-        category.children = await getAllCategories({ parentID: category.id })
-        category.productsQuantity = await products.count({ categories: category.id })
+        category.children = await getAllCategories({ index: "parentID", key: category.id })
+        category.productsQuantity = await products.count({ index: "categories", key: category.id })
     }
     return categories
 }
-categories.getAll = async function (filter) {
-    let res = await getAllCategories(filter)
+categories.getAll = async function (options) {
+    let res = await getAllCategories(options)
     res = await formateCategoriesDetail(res)
     return res
 }

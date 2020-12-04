@@ -35,26 +35,42 @@ export default function Product({ isfolded }) {
         { name: "限购", col: 1 },
         { name: "排序", col: 1 },
     ])
+    const [pages, setPages] = useState({ curPage: 1, perPage: 3, totalPages: 1 })
 
     useEffect(() => {
-        getData()
+        getData({}, (res) => {
+            const status = ca.getAllStatus(res)
+            setHeaderData({ ...headerData, status })
+        })
         getCategories()
+        getPages()
     }, [])
 
-    const getData = (filter, callback) => {
-        ca.getAllItemsData({ type: "products", filter },
+    const getData = (options, callback) => {
+        ca.getAllItemsData({
+            type: "products",
+            options: { page: pages.curPage, perPage: pages.perPage, ...options }
+        },
             (res) => {
-                const status = ca.getAllStatus(res)
-                setHeaderData({ ...headerData, status })
                 setData(res)
                 callback && callback(res)
             }
         )
     }
 
+    const getPages = () => {
+        ca.getItemsQuantity({ type: "products" }, (res) => {
+            const totalPages = Math.ceil(res / pages.perPage)
+            setPages({
+                ...pages,
+                totalPages,
+            })
+        })
+    }
+
     const getCategories = () => {
         ca.getAllItemsData(
-            { type: "categories", filter: { parentID: 0 } },
+            { type: "categories", options: { index: "parentID", key: 0 } },
             (res) => {
                 res.push({ id: 0, name: "无" })
                 setCategories(res)
@@ -63,13 +79,13 @@ export default function Product({ isfolded }) {
     }
 
     const selectStatus = (status) => {
-        const filter = status === "全部" ? {} : { status: status }
-        getData(filter, () => { setCurState(status) })
+        const options = status === "全部" ? {} : { index: "status", key: status }
+        getData(options, () => { setCurState(status) })
     }
 
     const filterProducts = () => {
-        const filter = { categories: formData.filter.id };
-        getData(filter)
+        const options = { index: "categories", key: formData.filter.id };
+        getData(options)
     }
 
     const onChange = (e, content) => {
@@ -77,7 +93,7 @@ export default function Product({ isfolded }) {
             id: Number(e.target.dataset.id),
             name: e.target.dataset.value,
         };
-        setFormDate(formData)
+        setFormDate({ ...formData })
     }
 
     const removeProduct = (id) => {
@@ -211,6 +227,7 @@ export default function Product({ isfolded }) {
                         onChange={e => onChange(e, "filter")}
                     ></TableFilter>
                 }
+                pages={pages}
             ></ContentTable>
         </Content>
     )

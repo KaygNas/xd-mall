@@ -30,8 +30,8 @@ export default function Categories({ isfolded }) {
         getData()
     }, [])
 
-    const getData = (filter, callback) => {
-        ca.getAllItemsData({ type: "categories", filter },
+    const getData = (options, callback) => {
+        ca.getAllItemsData({ type: "categories", options },
             (res) => {
                 const status = ca.getAllStatus(res)
                 setHeaderData({ ...headerData, status })
@@ -42,8 +42,8 @@ export default function Categories({ isfolded }) {
     }
 
     const selectStatus = (status) => {
-        const filter = status === "全部" ? {} : { status: status }
-        getData(filter, () => { setCurState(status) })
+        const options = status === "全部" ? {} : { index: "status", key: status }
+        getData(options, () => { setCurState(status) })
     }
 
     const removeCat = (id) => {

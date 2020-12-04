@@ -22,7 +22,7 @@ export function useProductCollection({ property, propertyID }) {
     useEffect(() => {
         ca.getAllItemsData({
             type: "products",
-            filter: { [property]: propertyID },
+            options: { index: property, key: propertyID },
         }, (res) => {
             setProductsCollection(res)
             originProductsCollection.current = res

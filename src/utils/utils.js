@@ -49,8 +49,8 @@ export const commonAction = {
         }
     },
 
-    getAllItemsData: async ({ type, filter }, callback) => {
-        const res = await INDEXEDDB[type].getAll(filter)
+    getAllItemsData: async ({ type, options }, callback) => {
+        const res = await INDEXEDDB[type].getAll(options)
         callback && callback(res)
         return res
     },
@@ -140,6 +140,12 @@ export const commonAction = {
         return orgin.filter(originItem => {
             return current.every(item => item[identifier] !== originItem[identifier])
         })
-    }
+    },
+
+    getItemsQuantity: async ({ type, options }, callback) => {
+        const res = await INDEXEDDB[type].count(options)
+        callback && callback(res)
+        return res
+    },
 }
 

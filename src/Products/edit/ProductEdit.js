@@ -46,7 +46,7 @@ export default function ProductEdit({ isfolded, params, history }) {
     getData();
     ca.getAllItemsData({
       type: "categories",
-      filter: { parentID: 0 }
+      options: { index: "parentID", key: 0 },
     }, (res) => {
       res.push({ id: 0, name: "无" });
       setCategories(res)
@@ -78,7 +78,9 @@ export default function ProductEdit({ isfolded, params, history }) {
           }; break;
         case "in_stock":
           newData[content] = Number(e.target.dataset.id) === 1; break;
-        default: newData[content] = e.target.value;
+        default:
+          const value = e.target.dataset.value || e.target.value
+          newData[content] = value;
       }
       setData(newData)
     }
