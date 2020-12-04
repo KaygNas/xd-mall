@@ -28,6 +28,8 @@ export default function TagEdit({ isfolded, params, history }) {
         productsCollection,
         setProductsCollection,
         diffUpdateProductsCollection,
+        pages,
+        turnPage,
     ] = useProductCollection({ property: "tags", propertyID: id })
 
     useEffect(() => {
@@ -55,8 +57,7 @@ export default function TagEdit({ isfolded, params, history }) {
     const setItem = (e) => {
         const id = Number(e.target.dataset.id)
         const item = listItems.find(val => val.id === id)
-        const product = ca.insertProductProperty({ property: "tags", propertyData: { id: data.id, name: data.name }, product: item })
-        setNewItem({ label: e.target.dataset.value, data: product })
+        setNewItem({ label: e.target.dataset.value, data: item })
     }
 
     const resetItem = (e) => {
@@ -77,7 +78,7 @@ export default function TagEdit({ isfolded, params, history }) {
     const updateData = () => {
         ca.updateData({ type: "tags", id, data, }, async (res) => {
             history.push("/products/tags/edit/" + res)
-            diffUpdateProductsCollection()
+            diffUpdateProductsCollection({ property: "tags", propertyID: res })
         })
     }
 
@@ -172,6 +173,8 @@ export default function TagEdit({ isfolded, params, history }) {
                                     button={{ name: "添加新项目", fn: addItem }}
                                 />
                             }
+                            pages={pages}
+                            onPageChange={(action) => turnPage(action)}
                         ></ContentTable>
                     </EditArea>
                 }

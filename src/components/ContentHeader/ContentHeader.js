@@ -23,7 +23,10 @@ function ContentHeader(props) {
                 }
                 {
                     props.searchBox &&
-                    <SearchBox searchBtnText={props.searchBtnText}></SearchBox>
+                    <SearchBox
+                        btnText={props.searchBox.btnText}
+                        fn={props.searchBox.fn}
+                    ></SearchBox>
                 }
             </div>
         </React.Fragment>

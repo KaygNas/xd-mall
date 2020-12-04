@@ -4,6 +4,7 @@ import ContentTable from "../components/ContentTable/ContentTable";
 import Content from "../components/Content/Content";
 import { commonAction as ca } from "../utils/utils";
 import { Link } from "react-router-dom";
+import { usePages } from "../utils/myHooks"
 
 export default function Tags({ isfolded }) {
     const [headerData] = useState({ title: "标签" })
@@ -12,13 +13,14 @@ export default function Tags({ isfolded }) {
         { name: "包含商品", col: 6 },
     ])
     const [data, setData] = useState([])
+    const [pages, turnPage] = usePages("tags")
 
     useEffect(() => {
-        getData()
-    }, [])
+        getData({ page: pages.curPage })
+    }, [pages.curPage])
 
-    const getData = () => {
-        ca.getAllItemsData({ type: "tags" }, setData);
+    const getData = (options) => {
+        ca.getAllItemsData({ type: "tags", options }, setData);
     }
 
     const removeTag = (id) => {
@@ -75,6 +77,8 @@ export default function Tags({ isfolded }) {
             <ContentTable
                 tableHead={tableHead}
                 tableBody={tableBody}
+                pages={pages}
+                onPageChange={(action) => turnPage(action)}
             ></ContentTable>
         </Content>
     )

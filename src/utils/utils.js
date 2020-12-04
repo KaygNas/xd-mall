@@ -71,22 +71,15 @@ export const commonAction = {
             .toISOString().replace(/(:\d+\.\w+)$/, "");
     },
 
-    getAllStatus: (data) => {
-        let status = [],
-            stat = new Map();
-        data.forEach((item) => {
-            let value = stat.get(item.status);
-            if (value) {
-                stat.set(item.status, ++value);
-            } else {
-                stat.set(item.status, 1)
-            }
-        })
-        status.push({ status: "全部", itemQty: data.length });
-        stat.forEach((val, key) => {
-            status.push({ status: key, itemQty: val });
-        })
-        return status;
+    getAllStatus: async (type, status) => {
+        const res = []
+        for (const item of Object.values(status)) {
+            const qty = await INDEXEDDB[type].count({ index: "status", key: item.status })
+            res.push({ ...item, itemQty: qty })
+        }
+        const total = res.reduce((acc, cur) => acc + cur.itemQty, 0)
+        res[0].itemQty = total
+        return res;
     },
 
     joinWithParent: (categories, id) => {
@@ -127,12 +120,12 @@ export const commonAction = {
         return { ...product, [property]: newProperty }
     },
 
-    insertProductProperty: ({ property, propertyData, product }) => {
-        if (product[property].some(item => item.id === propertyData.id)) {
+    insertProductProperty: ({ property, propertyID, product }) => {
+        if (product[property].some(item => item.id === propertyID)) {
             return product
         }
 
-        const newProperty = [...product[property], propertyData]
+        const newProperty = [...product[property], { id: propertyID }]
         return { ...product, [property]: newProperty }
     },
 

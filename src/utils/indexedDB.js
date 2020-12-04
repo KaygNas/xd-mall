@@ -275,12 +275,12 @@ const getAllTags = ObjectStore.prototype.getAll.bind(tags)
 const deleteTags = ObjectStore.prototype.delete.bind(tags)
 const formateTagsDetail = async function (tags) {
     for (let tag of tags) {
-        tag.productsQuantity = await products.count({ tags: tag.id })
+        tag.productsQuantity = await products.count({ index: "tags", key: tag.id })
     }
     return tags
 }
-tags.getAll = async function () {
-    let res = await getAllTags()
+tags.getAll = async function (options) {
+    let res = await getAllTags(options)
     res = await formateTagsDetail(res)
     return res
 }

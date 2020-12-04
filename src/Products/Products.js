@@ -6,7 +6,7 @@ import { commonAction as ca } from "../utils/utils";
 import { Link } from "react-router-dom";
 import { ClockCircleFilled, CheckCircleFilled } from "@ant-design/icons";
 import { TableFilter } from "../components/TableControler/TableControler";
-
+import { usePages } from "../utils/myHooks"
 
 export default function Product({ isfolded }) {
     const [data, setData] = useState([])
@@ -35,21 +35,20 @@ export default function Product({ isfolded }) {
         { name: "限购", col: 1 },
         { name: "排序", col: 1 },
     ])
-    const [pages, setPages] = useState({ curPage: 1, perPage: 3, totalPages: 1 })
+    const [pages, turnPage] = usePages("products")
 
     useEffect(() => {
-        getData({}, (res) => {
-            const status = ca.getAllStatus(res)
+        getData({ page: pages.curPage }, async (res) => {
+            const status = await ca.getAllStatus("products", headerData.status)
             setHeaderData({ ...headerData, status })
         })
         getCategories()
-        getPages()
-    }, [])
+    }, [pages.curPage])
 
     const getData = (options, callback) => {
         ca.getAllItemsData({
             type: "products",
-            options: { page: pages.curPage, perPage: pages.perPage, ...options }
+            options,
         },
             (res) => {
                 setData(res)
@@ -58,14 +57,8 @@ export default function Product({ isfolded }) {
         )
     }
 
-    const getPages = () => {
-        ca.getItemsQuantity({ type: "products" }, (res) => {
-            const totalPages = Math.ceil(res / pages.perPage)
-            setPages({
-                ...pages,
-                totalPages,
-            })
-        })
+    const searchProducts = (keywords) => {
+        ca.searchItemsData({ type: "products", keywords }, setData)
     }
 
     const getCategories = () => {
@@ -211,8 +204,10 @@ export default function Product({ isfolded }) {
                 addBtnPath="/products/edit/new"
                 status={headerData.status}
                 curStatus={curStatus}
-                searchBox={true}
-                searchBtnText={headerData.searchBtnText}
+                searchBox={{
+                    btnText: headerData.searchBtnText,
+                    fn: searchProducts,
+                }}
                 selectStatus={selectStatus}
             ></ContentHeader>
             <ContentTable
@@ -228,6 +223,7 @@ export default function Product({ isfolded }) {
                     ></TableFilter>
                 }
                 pages={pages}
+                onPageChange={(action) => turnPage(action)}
             ></ContentTable>
         </Content>
     )

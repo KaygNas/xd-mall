@@ -5,6 +5,7 @@ import Content from "../components/Content/Content";
 import { commonAction as ca } from "../utils/utils";
 import { Link } from "react-router-dom";
 import { ClockCircleFilled, CheckCircleFilled } from "@ant-design/icons";
+import { usePages } from "../utils/myHooks"
 
 export default function Categories({ isfolded }) {
     const [data, setData] = useState([])
@@ -25,15 +26,16 @@ export default function Categories({ isfolded }) {
         { name: "包含商品", col: 4 },
         { name: "排序", col: 1 },
     ])
+    const [pages, turnPage] = usePages("categories")
 
     useEffect(() => {
-        getData()
-    }, [])
+        getData({ page: pages.curPage })
+    }, [pages.curPage])
 
     const getData = (options, callback) => {
         ca.getAllItemsData({ type: "categories", options },
-            (res) => {
-                const status = ca.getAllStatus(res)
+            async (res) => {
+                const status = await ca.getAllStatus("categories", headerData.status)
                 setHeaderData({ ...headerData, status })
                 setData(res)
                 callback && callback(res)
@@ -119,6 +121,8 @@ export default function Categories({ isfolded }) {
             <ContentTable
                 tableHead={tableHead}
                 tableBody={tableBody}
+                pages={pages}
+                onPageChange={(action) => turnPage(action)}
             ></ContentTable>
         </Content>
     )

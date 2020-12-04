@@ -1,9 +1,9 @@
 import "./ContentTable.scss";
 
-export default function ContentTable({ pages, tableNav, tableHead, tableBody }) {
+export default function ContentTable({ pages, onPageChange, tableNav, tableHead, tableBody }) {
     return (
         <div>
-            <TableNav pages={pages}>
+            <TableNav pages={pages} onPageChange={onPageChange}>
                 {tableNav}
             </TableNav>
             <table className="table">
@@ -50,38 +50,51 @@ export default function ContentTable({ pages, tableNav, tableHead, tableBody }) 
                     </tr>
                 </tfoot>
             </table>
-            <TableNav >
+            <TableNav pages={pages} onPageChange={onPageChange}>
                 {tableNav}
             </TableNav>
         </div >
     )
 }
 
-function TableNav({ children, pages = {} }) {
+function TableNav({ children, pages = {}, onPageChange }) {
     return (
         <div className="table-nav">
             {children}
             <PageTurner
                 curPage={pages.curPage}
                 totalPages={pages.totalPages}
+                onPageChange={onPageChange}
             ></PageTurner>
         </div>
     )
 }
 
-function PageTurner({ curPage, totalPages }) {
+function PageTurner({ curPage, totalPages, onPageChange }) {
     return (
         <div className="turner">
-            <button className="turner__btn btn-2">«</button>
-            <button className="turner__btn  btn-2">‹</button>
+            <button
+                className="turner__btn btn-2"
+                onClick={() => onPageChange("first")}
+            >«</button>
+            <button
+                className="turner__btn  btn-2"
+                onClick={() => onPageChange("pre")}
+            >‹</button>
             <div className="turner__indicator">
                 第<input className="turner__indicator__input"
                     value={curPage}
                     readOnly={true}
                 ></input>页，共{totalPages}页
             </div>
-            <button className="turner__btn btn-2">›</button>
-            <button className="turner__btn btn-2">»</button>
+            <button
+                className="turner__btn btn-2"
+                onClick={() => onPageChange("next")}
+            >›</button>
+            <button
+                className="turner__btn btn-2"
+                onClick={() => onPageChange("last")}
+            >»</button>
         </div >
     )
 }

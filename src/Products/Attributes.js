@@ -4,6 +4,7 @@ import ContentTable from "../components/ContentTable/ContentTable";
 import Content from "../components/Content/Content";
 import { commonAction as ca } from "../utils/utils";
 import { Link } from "react-router-dom";
+import { usePages } from "../utils/myHooks"
 
 export default function Attributes({ isfolded }) {
     const [data, setData] = useState([])
@@ -12,10 +13,11 @@ export default function Attributes({ isfolded }) {
         { name: "名称", col: 6 },
         { name: "选项", col: 6 },
     ])
+    const [pages, turnPage] = usePages("categories")
 
     useEffect(() => {
-        getData()
-    }, [])
+        getData({ page: pages.curPage })
+    }, [pages.curPage])
 
     const getData = () => {
         ca.getAllItemsData({ type: "attributes" }, setData);
@@ -76,6 +78,8 @@ export default function Attributes({ isfolded }) {
             <ContentTable
                 tableHead={tableHead}
                 tableBody={tableBody}
+                pages={pages}
+                onPageChange={(action) => turnPage(action)}
             ></ContentTable>
         </Content>
     )

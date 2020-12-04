@@ -39,6 +39,8 @@ export default function CategoryEdit({ isfolded, params, history }) {
         productsCollection,
         setProductsCollection,
         diffUpdateProductsCollection,
+        pages,
+        turnPage,
     ] = useProductCollection({ property: "categories", propertyID: id })
 
     useEffect(() => {
@@ -124,7 +126,7 @@ export default function CategoryEdit({ isfolded, params, history }) {
     const updateData = () => {
         ca.updateData({ type: "categories", id, data, }, (res) => {
             history.push("/products/categories/edit/" + res)
-            diffUpdateProductsCollection()
+            diffUpdateProductsCollection({ property: "categories", propertyID: res })
         })
     }
 
@@ -255,6 +257,8 @@ export default function CategoryEdit({ isfolded, params, history }) {
                                     button={{ name: "添加新项目", fn: addItem }}
                                 />
                             }
+                            pages={pages}
+                            onPageChange={(action) => turnPage(action)}
                         ></ContentTable>
                     </EditArea>
                 }
