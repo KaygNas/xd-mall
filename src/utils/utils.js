@@ -39,7 +39,7 @@ export const commonAction = {
 
     getItemData: async ({ type, id }, callback) => {
         id = Number(id)
-        if (!Number.isNaN(id)) {
+        if (id) {
             const res = await INDEXEDDB[type].get(id)
             callback && callback(res)
             return res
@@ -111,22 +111,22 @@ export const commonAction = {
         return res
     },
 
-    removeProductProperty: ({ property, propertyID, product }) => {
-        const propertyIndex = product[property].findIndex(item => item.id === propertyID)
+    removeProductProperty: ({ propertyType, property, product }) => {
+        const propertyIndex = product[propertyType].findIndex(item => item.id === property.id)
         const newProperty = [
-            ...product[property].slice(0, propertyIndex),
-            ...product[property].slice(propertyIndex + 1),
+            ...product[propertyType].slice(0, propertyIndex),
+            ...product[propertyType].slice(propertyIndex + 1),
         ]
-        return { ...product, [property]: newProperty }
+        return { ...product, [propertyType]: newProperty }
     },
 
-    insertProductProperty: ({ property, propertyID, product }) => {
-        if (product[property].some(item => item.id === propertyID)) {
+    insertProductProperty: ({ propertyType, property, product }) => {
+        if (product[propertyType].some(item => item.id === property.id)) {
             return product
         }
 
-        const newProperty = [...product[property], { id: propertyID }]
-        return { ...product, [property]: newProperty }
+        const newProperty = [...product[propertyType], property]
+        return { ...product, [propertyType]: newProperty }
     },
 
     getDiffFrom: (orgin, current, identifier) => {

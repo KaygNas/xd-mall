@@ -22,7 +22,7 @@ const tableHead = [
 ]
 
 export default function CategoryEdit({ isfolded, params, history }) {
-    const id = Number(params.id)
+    const id = Number(params.id) || 0
     const [data, setData] = useState({
         name: "",
         images: [],
@@ -41,7 +41,7 @@ export default function CategoryEdit({ isfolded, params, history }) {
         diffUpdateProductsCollection,
         pages,
         turnPage,
-    ] = useProductCollection({ property: "categories", propertyID: id })
+    ] = useProductCollection({ propertyType: "categories", property: data })
 
     useEffect(() => {
         ca.getItemData({ type: "categories", id }, setData)
@@ -104,8 +104,7 @@ export default function CategoryEdit({ isfolded, params, history }) {
     const setItem = (e) => {
         const id = Number(e.target.dataset.id)
         const item = listItems.find(val => val.id === id)
-        const product = ca.insertProductProperty({ property: "categories", propertyData: { id: data.id, name: data.name }, product: item })
-        setNewItem({ label: e.target.dataset.value, data: product })
+        setNewItem({ label: e.target.dataset.value, data: item })
     }
 
     const resetItem = (e) => {
@@ -113,7 +112,9 @@ export default function CategoryEdit({ isfolded, params, history }) {
     }
 
     const addItem = (e) => {
-        ca.addItem({ items: productsCollection, item: newItem.data }, newItems => {
+        const item = ca.insertProductProperty({ propertyType: "categories", property: data, product: newItem.data })
+        debugger
+        ca.addItem({ items: productsCollection, item }, newItems => {
             setProductsCollection(newItems)
         });
     }
@@ -126,7 +127,7 @@ export default function CategoryEdit({ isfolded, params, history }) {
     const updateData = () => {
         ca.updateData({ type: "categories", id, data, }, (res) => {
             history.push("/products/categories/edit/" + res)
-            diffUpdateProductsCollection({ property: "categories", propertyID: res })
+            diffUpdateProductsCollection({ propertyType: "categories", property: { id: res } })
         })
     }
 

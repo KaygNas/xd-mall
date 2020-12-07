@@ -20,7 +20,7 @@ const tableHead = [
 ]
 
 export default function TagEdit({ isfolded, params, history }) {
-    const id = Number(params.id)
+    const id = Number(params.id) || 0
     const [data, setData] = useState({ name: "" })
     const [newItem, setNewItem] = useState({ label: "", data: null })
     const [listItems, setListItems] = useState([])
@@ -30,7 +30,7 @@ export default function TagEdit({ isfolded, params, history }) {
         diffUpdateProductsCollection,
         pages,
         turnPage,
-    ] = useProductCollection({ property: "tags", propertyID: id })
+    ] = useProductCollection({ propertyType: "tags", property: data })
 
     useEffect(() => {
         ca.getItemData({ type: "tags", id }, setData)
@@ -65,7 +65,8 @@ export default function TagEdit({ isfolded, params, history }) {
     }
 
     const addItem = (e) => {
-        ca.addItem({ items: productsCollection, item: newItem.data }, newItems => {
+        const item = ca.insertProductProperty({ propertyType: "tags", property: data, product: newItem.data })
+        ca.addItem({ items: productsCollection, item }, newItems => {
             setProductsCollection(newItems)
         });
     }
@@ -78,7 +79,7 @@ export default function TagEdit({ isfolded, params, history }) {
     const updateData = () => {
         ca.updateData({ type: "tags", id, data, }, async (res) => {
             history.push("/products/tags/edit/" + res)
-            diffUpdateProductsCollection({ property: "tags", propertyID: res })
+            diffUpdateProductsCollection({ propertyType: "tags", property: { id: res } })
         })
     }
 

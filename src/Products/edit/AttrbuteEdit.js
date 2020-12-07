@@ -9,15 +9,17 @@ import {
 import ContentTable from "../../components/ContentTable/ContentTable";
 import { commonAction as ca } from "../../utils/utils";
 import { ItemInputer } from "../../components/TableControler/TableControler";
+import { usePages } from "../../utils/myHooks"
 
 const tableHead = [
     { name: "选项", col: 12 }
 ]
 
 export default function AttributeEdit({ isfolded, params, history }) {
+    const id = Number(params.id) || 0
     const [data, setData] = useState({ name: "", options: [] })
     const [newItem, setNewItem] = useState({ label: "", data: null })
-    const id = Number(params.id)
+
 
     useEffect(() => {
         getData();

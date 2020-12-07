@@ -18,6 +18,7 @@ const inStock = [
 ]
 
 export default function ProductEdit({ isfolded, params, history }) {
+  const id = Number(params.id) || 0
   const [data, setData] = useState({
     name: "",
     attributes: [],
@@ -40,7 +41,6 @@ export default function ProductEdit({ isfolded, params, history }) {
     attributes: { id: "", name: "" },
     tags: { id: "", name: "" },
   })
-  const id = Number(params.id)
 
   useEffect(() => {
     getData();
