@@ -8,7 +8,7 @@ import {
 
 export default function Sider(props) {
     const path = useLocation().pathname
-    const curRootPath = (path.match(/^\/.*(?=\/)/) || path.match(/^\/.*/))[0]
+
     return (
         <aside
             className="menu-wraper"
@@ -16,8 +16,7 @@ export default function Sider(props) {
         >
             {
                 props.menuItems.map((item, index) => {
-                    const isSelected = !props.isfolded && item.listItems[0].path.startsWith(curRootPath)
-                    debugger
+                    const isSelected = !props.isfolded && path.startsWith(item.listItems[0].path)
                     return (
                         <MenuItem
                             key={index}

@@ -7,7 +7,8 @@ export default function SubMenuItems(props) {
     const listStyle = {
         height: listItemHeight * props.listItems.length
     }
-    const curPath = useLocation().pathname
+    const path = useLocation().pathname
+    const curRootPath = (path.match(/^\/.*(?=\/edit.*)/) || path.match(/.*/))[0]
 
     return (
         <ul
@@ -16,10 +17,11 @@ export default function SubMenuItems(props) {
         >
             {
                 props.listItems.map((item, index) => {
+                    const isSelected = curRootPath === item.path
                     return (
                         <Link key={index} to={item.path}>
                             <li
-                                className={"menu__sub-menu__title " + (item.path === curPath ? "menu__sub-menu__title--selected" : "")}
+                                className={"menu__sub-menu__title " + (isSelected ? "menu__sub-menu__title--selected" : "")}
                             >
                                 {item.title}
                             </li>
