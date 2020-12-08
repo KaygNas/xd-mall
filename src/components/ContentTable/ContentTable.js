@@ -75,11 +75,11 @@ function PageTurner({ curPage, totalPages, onPageChange }) {
         <div className="turner">
             <button
                 className="turner__btn btn-2"
-                onClick={() => onPageChange("first")}
+                onClick={() => onPageChange({ type: "turnPage", text: "first" })}
             >«</button>
             <button
                 className="turner__btn  btn-2"
-                onClick={() => onPageChange("pre")}
+                onClick={() => onPageChange({ type: "turnPage", text: "pre" })}
             >‹</button>
             <div className="turner__indicator">
                 第<input className="turner__indicator__input"
@@ -89,11 +89,11 @@ function PageTurner({ curPage, totalPages, onPageChange }) {
             </div>
             <button
                 className="turner__btn btn-2"
-                onClick={() => onPageChange("next")}
+                onClick={() => onPageChange({ type: "turnPage", text: "next" })}
             >›</button>
             <button
                 className="turner__btn btn-2"
-                onClick={() => onPageChange("last")}
+                onClick={() => onPageChange({ type: "turnPage", text: "last" })}
             >»</button>
         </div >
     )

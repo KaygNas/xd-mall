@@ -1,49 +1,33 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import "./SubMenuItems.scss";
 
-class SubMenuItems extends React.Component {
-    constructor(props) {
-        super();
-        let listItemHeight = 40;
-        let height = listItemHeight * props.listItems.length;
-        this.state = {
-            selectedItem: -1,
-            listStyle: {
-                height: height,
-            },
-        }
+export default function SubMenuItems(props) {
+    const listItemHeight = 40;
+    const listStyle = {
+        height: listItemHeight * props.listItems.length
     }
+    const curPath = useLocation().pathname
 
-    selectListItem(index) {
-        this.setState({
-            selectedItem: index,
-        })
-    }
-
-    render() {
-        return (
-            <ul
-                className="menu__sub-menu "
-                style={this.props.selected ? this.state.listStyle : { height: "0px" }}
-            >
-                {
-                    this.props.listItems.map((item, index) => {
-                        return (
-                            <Link key={index} to={item.path}>
-                                <li
-                                    className={"menu__sub-menu__title " + (index === this.state.selectedItem ? "menu__sub-menu__title--selected" : "")}
-                                    onClick={() => this.selectListItem(index)}
-                                >
-                                    {item.title}
-                                </li>
-                            </Link>
-                        );
-                    })
-                }
-            </ul>
-        );
-    }
+    return (
+        <ul
+            className="menu__sub-menu "
+            style={props.selected ? listStyle : { height: "0px" }}
+        >
+            {
+                props.listItems.map((item, index) => {
+                    return (
+                        <Link key={index} to={item.path}>
+                            <li
+                                className={"menu__sub-menu__title " + (item.path === curPath ? "menu__sub-menu__title--selected" : "")}
+                            >
+                                {item.title}
+                            </li>
+                        </Link>
+                    );
+                })
+            }
+        </ul>
+    );
 }
 
-export default SubMenuItems;

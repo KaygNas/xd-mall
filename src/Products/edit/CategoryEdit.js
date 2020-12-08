@@ -113,10 +113,7 @@ export default function CategoryEdit({ isfolded, params, history }) {
 
     const addItem = (e) => {
         const item = ca.insertProductProperty({ propertyType: "categories", property: data, product: newItem.data })
-        debugger
-        ca.addItem({ items: productsCollection, item }, newItems => {
-            setProductsCollection(newItems)
-        });
+        ca.addItem({ items: productsCollection, item }, setProductsCollection);
     }
 
     const removeItem = (id) => {
